@@ -1,11 +1,10 @@
 package it.polito.ai.lab3.service.model;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import org.springframework.data.annotation.Id;
+
 
 public class CustomerTransaction {
     @Id
-    @GeneratedValue
     private Long customerId;
     private Long userId;
     private int nPositions;

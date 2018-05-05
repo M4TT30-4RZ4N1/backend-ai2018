@@ -27,7 +27,7 @@ public class PositionService {
         positionRepository.save(p);
     }
     public synchronized void addToDB(long user, TimedPosition p){
-        first = positionRepository.findLastPosition(user);
+        //first = positionRepository.findLastPosition(user);
         if(first == null) {
             if(validator.validateFirst(p)) {
                 addPosition( p);

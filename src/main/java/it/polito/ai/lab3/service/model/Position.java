@@ -1,13 +1,10 @@
 package it.polito.ai.lab3.service.model;
 
-import org.springframework.context.annotation.Bean;
+import org.springframework.data.annotation.Id;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import java.util.Objects;
 public class Position {
     @Id
-    @GeneratedValue
     public Long id;
     public double lat, lng;
 

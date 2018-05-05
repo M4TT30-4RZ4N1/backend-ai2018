@@ -16,7 +16,7 @@ import java.util.List;
 public class RestUserController {
     @Autowired
     private PositionService positionService;
-    @RequestMapping(value="/{userId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value="/{userId}/positions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
     List<TimedPosition> getAll(@PathVariable Long userId) {
