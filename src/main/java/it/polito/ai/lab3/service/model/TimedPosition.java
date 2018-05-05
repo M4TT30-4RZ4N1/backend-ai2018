@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class TimedPosition extends Position {
     public long timestamp;
-    public Long userId;
+    public long userId;
     public TimedPosition(double lat, double lng, long timestamp) {
         super(lat, lng);
         this.timestamp = timestamp;
@@ -18,7 +18,7 @@ public class TimedPosition extends Position {
         return new Date(timestamp);
     }
 
-    public Long getUserId() {
+    public long getUserId() {
         return userId;
     }
 
