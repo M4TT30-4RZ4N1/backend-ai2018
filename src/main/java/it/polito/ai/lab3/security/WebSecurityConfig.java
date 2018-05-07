@@ -16,15 +16,23 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Order(SecurityProperties.BASIC_AUTH_ORDER)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-
+    /**
+     * Le password sono cifrate con BCrypt (round 4)
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(4);
     }
 
+    /**
+     * Repository degli utenti
+     */
     @Autowired
     private RepositoryUserDetailsService userDetailsService;
 
+    /**
+     * Imposto il repository degli utenti e il tipo di encoding della password usato
+     */
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
 	    auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
@@ -39,11 +47,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
 		http.authorizeRequests().antMatchers("/login").permitAll()
-		.antMatchers("/oauth/token/revokeById/**").permitAll()
 		.antMatchers("/tokens/**").permitAll()
-		.anyRequest().authenticated()
-		.and().formLogin().permitAll()
-		.and().csrf().disable();
+		.anyRequest().authenticated();
     }
 
 }

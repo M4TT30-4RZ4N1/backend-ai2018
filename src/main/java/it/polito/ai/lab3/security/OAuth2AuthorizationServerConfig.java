@@ -21,44 +21,62 @@ import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFacto
 
 @Configuration
 @EnableAuthorizationServer
-public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
-
+public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter{
+        /**
+         *  Gestisce l'autenticazione con username e password ed è definito in WebSecurityConfig
+         */
     @Autowired
     @Qualifier("authenticationManagerBean")
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private RepositoryUserDetailsService userDetailsService;
 
-
+    /**
+     * Definisce i permessi relativi all'accesso al token endpoint /oauth/token
+     * @param oauthServer
+     */
     @Override
-    public void configure(final AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
+    public void configure(final AuthorizationServerSecurityConfigurer oauthServer){
         oauthServer.tokenKeyAccess("permitAll()").checkTokenAccess("isAuthenticated()");
     }
 
+    /**
+     * Configura lo storage dei token come inmemory e imposta i parametri da usare per la base authentication dei client
+     * La password (secret) è bcrypt round 4
+     * @param clients
+     * @throws Exception
+     */
     @Override
-    public void configure(final ClientDetailsServiceConfigurer clients) throws Exception {// @formatter:off
+    public void configure(final ClientDetailsServiceConfigurer clients) throws Exception {
         clients
-                .inMemory().withClient("sampleClientId").authorizedGrantTypes("implicit")
-                .scopes("read", "write", "foo", "bar").autoApprove(false).accessTokenValiditySeconds(3600)
-
-                .and().withClient("fooClientIdPassword").secret("$2a$04$01S/P3ty1diiGWso4RO4WOvjqj6P.vcunzmbbogsN.9Igp6Uu2qWa")
-                .authorizedGrantTypes("password", "authorization_code", "refresh_token").scopes("foo", "read", "write")
+                .inMemory().withClient("fooClientIdPassword").secret("$2a$04$01S/P3ty1diiGWso4RO4WOvjqj6P.vcunzmbbogsN.9Igp6Uu2qWa")
+                .authorizedGrantTypes("password", "authorization_code", "refresh_token").scopes("default")
                 .accessTokenValiditySeconds(3600) // 1 hour
                 .refreshTokenValiditySeconds(2592000)
         ;
     }
 
+    /**
+     * Imposta lo storage, il converter dei token e il gestore dell'autenticazione (username e pass di oauth2)
+     * @param endpoints
+     * @throws Exception
+     */
     @Override
-    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints){
         endpoints.tokenStore(tokenStore())
                 .accessTokenConverter(accessTokenConverter())
-                .authenticationManager(authenticationManager);
+                .authenticationManager(authenticationManager)
+                .userDetailsService(userDetailsService);
     }
-
 
     @Bean
     public TokenStore tokenStore() {
     return new JwtTokenStore(accessTokenConverter());
     }
 
+    /**
+     * Firma e Verifica i token con una chiave simmetrica.
+     */
     @Bean
     public JwtAccessTokenConverter accessTokenConverter() {
     final JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
@@ -68,6 +86,7 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
     converter.setKeyPair(keyStoreKeyFactory.getKeyPair("oauthkey", "supersegreto".toCharArray()));*/
     return converter;
     }
+
 
     @Bean
     @Primary

@@ -1,5 +1,7 @@
 package it.polito.ai.lab3;
 
+import it.polito.ai.lab3.security.User;
+import it.polito.ai.lab3.security.UserRepository;
 import it.polito.ai.lab3.service.Repositories.PositionRepository;
 import it.polito.ai.lab3.service.model.TimedPosition;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,8 @@ import java.util.Date;
 public class Lab3Application {
 	@Autowired
 	PositionRepository positionRepository;
+    @Autowired
+    UserRepository userRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(Lab3Application.class, args);
@@ -23,6 +27,10 @@ public class Lab3Application {
     public CommandLineRunner initDB(){
         return args -> {
             System.out.println("Running initialization");
+            userRepository.deleteAll();
+            userRepository.save(new User("testuser","testpassword","ROLE_USER"));
+            userRepository.save(new User("testadmin","testpassword","ROLE_ADMIN"));
+            userRepository.save(new User("testcustomer","testpassword","ROLE_CUSTOMER"));
             positionRepository.deleteAll();
 
             // save a couple of customers

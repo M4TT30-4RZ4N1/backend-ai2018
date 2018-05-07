@@ -23,7 +23,9 @@ import java.io.IOException;
 @EnableResourceServer
 public class OAuth2ResourceServerConfigJwt extends ResourceServerConfigurerAdapter {
 
-
+    /**
+     * Gestisce l'autenicazione alle varie risorse dell'app separandole per ruoli.
+     */
     @Override
     public void configure(final HttpSecurity http) throws Exception {
                 http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)

@@ -13,7 +13,12 @@ public class RepositoryUserDetailsService implements UserDetailsService {
 
     private UserRepository userRepository;
 
-
+    /**
+     * Cerca e carica gli utenti dal database per username
+     * @param username username
+     * @return L'utente trovato
+     * @throws UsernameNotFoundException L'utente non è stato trovato
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> userOptional = userRepository.findByUsername(username);
