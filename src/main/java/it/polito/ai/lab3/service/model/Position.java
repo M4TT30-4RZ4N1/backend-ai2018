@@ -5,7 +5,7 @@ import org.springframework.data.annotation.Id;
 import java.util.Objects;
 public class Position {
     @Id
-    public long id;
+    public String id;
     public double lat, lng;
 
     public Position(){}

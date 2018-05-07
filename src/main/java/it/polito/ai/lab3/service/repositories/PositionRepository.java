@@ -9,9 +9,9 @@ import java.util.List;
 @Repository
 public interface PositionRepository extends MongoRepository<TimedPosition, Long> {
 
-    List<TimedPosition> findByUserId(String userId);
+    List<TimedPosition> findByUser(String userId);
 
-    List<TimedPosition> findByUserIdAndTimestampBetween(String userId, long after, long before);
+    List<TimedPosition> findByUserAndTimestampBetween(String userId, long after, long before);
     //db.TimedPositions.find().sort({timestamp:-1}).limit(1) for MAX
     //db.TimedPositions.find().sort({timestamp:+1}).limit(1) for MIN
 

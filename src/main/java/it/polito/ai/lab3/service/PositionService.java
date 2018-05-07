@@ -27,7 +27,7 @@ public class PositionService {
 
     @PreAuthorize("hasRole( 'USER' )")
     private void addPosition(TimedPosition p){
-        positionRepository.save(p);
+        positionRepository.insert(p);
     }
     public synchronized void addToDB(String user, TimedPosition p){
         first = positionRepositoryImpl.findLastPositionImpl(user);
@@ -47,14 +47,14 @@ public class PositionService {
     @PreAuthorize("hasRole( 'USER' )")
     public List<TimedPosition> getPositions(String user){
         List<TimedPosition> res = new ArrayList<>();
-        res.addAll(positionRepository.findByUserId(user));
+        res.addAll(positionRepository.findByUser(user));
         return res;
     }
 
     @PreAuthorize("hasRole( 'USER' )")
     public List<TimedPosition> getPositionInInterval(String user, Date after, Date before){
         List<TimedPosition> res = new ArrayList<>();
-        res.addAll(positionRepository.findByUserIdAndTimestampBetween(user, after.getTime(), before.getTime()));
+        res.addAll(positionRepository.findByUserAndTimestampBetween(user, after.getTime(), before.getTime()));
         return res;
     }
     @PreAuthorize("hasRole( 'CUSTOMER' )")

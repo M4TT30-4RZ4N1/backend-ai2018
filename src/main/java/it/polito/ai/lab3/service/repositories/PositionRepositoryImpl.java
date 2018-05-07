@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public abstract class PositionRepositoryImpl implements PositionRepository{
+public class PositionRepositoryImpl{
     
     @Autowired
     MongoTemplate mongoTemplate;

@@ -32,9 +32,9 @@ public class RestUserController {
     @ResponseStatus(value = HttpStatus.CREATED)
     public @ResponseBody
     void createdPositions(@RequestBody List<TimedPosition> positions) {
-        UserDetails user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         for(TimedPosition position : positions)
-            positionService.addToDB(user.getUsername(), position);
+            positionService.addToDB(username, position);
     }
 
 }
