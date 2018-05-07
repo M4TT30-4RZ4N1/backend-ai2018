@@ -1,6 +1,6 @@
 package it.polito.ai.lab3.service;
 
-import it.polito.ai.lab3.service.Repositories.CustomerTransactionRepository;
+import it.polito.ai.lab3.service.repositories.CustomerTransactionRepository;
 import it.polito.ai.lab3.service.model.CustomerTransaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;

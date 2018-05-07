@@ -2,8 +2,8 @@ package it.polito.ai.lab3;
 
 import it.polito.ai.lab3.security.User;
 import it.polito.ai.lab3.security.UserRepository;
-import it.polito.ai.lab3.service.Repositories.PositionRepository;
 import it.polito.ai.lab3.service.model.TimedPosition;
+import it.polito.ai.lab3.service.repositories.PositionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -15,7 +15,7 @@ import java.util.Date;
 @SpringBootApplication
 public class Lab3Application {
 	@Autowired
-	PositionRepository positionRepository;
+    PositionRepository positionRepository;
     @Autowired
     UserRepository userRepository;
 
