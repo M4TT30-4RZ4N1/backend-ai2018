@@ -15,7 +15,7 @@ public abstract class PositionRepositoryImpl implements PositionRepository{
     @Autowired
     MongoTemplate mongoTemplate;
 
-    public TimedPosition findLastPositionImpl(long userId){
+    public TimedPosition findLastPositionImpl(String userId){
         if(mongoTemplate == null) throw new RuntimeException("Mongo DB not initialized");
         Query qMaxTimestamp = new Query();
         qMaxTimestamp.addCriteria(Criteria.where("userId").is(userId));

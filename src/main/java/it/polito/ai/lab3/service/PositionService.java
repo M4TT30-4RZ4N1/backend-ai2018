@@ -25,10 +25,11 @@ public class PositionService {
 
     }
 
+    @PreAuthorize("hasRole( 'USER' )")
     private void addPosition(TimedPosition p){
         positionRepository.save(p);
     }
-    public synchronized void addToDB(long user, TimedPosition p){
+    public synchronized void addToDB(String user, TimedPosition p){
         first = positionRepositoryImpl.findLastPositionImpl(user);
         if(first == null) {
             if(validator.validateFirst(p)) {
@@ -43,25 +44,27 @@ public class PositionService {
 
     }
 
-    public List<TimedPosition> getPositions(long user){
+    @PreAuthorize("hasRole( 'USER' )")
+    public List<TimedPosition> getPositions(String user){
         List<TimedPosition> res = new ArrayList<>();
         res.addAll(positionRepository.findByUserId(user));
         return res;
     }
 
-    public List<TimedPosition> getPositionInInterval(long user, Date after, Date before){
+    @PreAuthorize("hasRole( 'USER' )")
+    public List<TimedPosition> getPositionInInterval(String user, Date after, Date before){
         List<TimedPosition> res = new ArrayList<>();
         res.addAll(positionRepository.findByUserIdAndTimestampBetween(user, after.getTime(), before.getTime()));
         return res;
     }
-
+    @PreAuthorize("hasRole( 'CUSTOMER' )")
     public List<TimedPosition> getPositionInIntervalInPolygon(Date after, Date before){
         List<TimedPosition> res = new ArrayList<>();
         //res.addAll(positionRepository.findByUserIdAndTimestampAfterAndTimestampBeforeafter.getTime(), before.getTime()));
         return res;
     }
 
-
+    @PreAuthorize("hasRole( 'ADMIN' )")
     public List<TimedPosition> getPositions(){
         List<TimedPosition> res = new ArrayList<>();
         for(TimedPosition p : positionRepository.findAll()){

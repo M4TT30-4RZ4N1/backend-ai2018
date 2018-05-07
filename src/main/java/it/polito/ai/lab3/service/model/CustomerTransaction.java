@@ -5,8 +5,8 @@ import org.springframework.data.annotation.Id;
 
 public class CustomerTransaction {
     @Id
-    private Long customerId;
-    private Long userId;
+    private String customerId;
+    private String userId;
     private int nPositions;
     private double price;
 
@@ -17,11 +17,11 @@ public class CustomerTransaction {
         this.price = price;
     }
 
-    public Long getCustomerId() {
+    public String getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(Long customerId) {
+    public void setCustomerId(String customerId) {
         this.customerId = customerId;
     }
 
@@ -41,11 +41,11 @@ public class CustomerTransaction {
         this.price = price;
     }
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 }
