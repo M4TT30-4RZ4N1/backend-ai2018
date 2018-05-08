@@ -16,11 +16,11 @@ public class PositionRepositoryImpl{
     @Autowired
     MongoTemplate mongoTemplate;
 
-    public TimedPosition findLastPositionImpl(String userId){
+    public TimedPosition findLastPositionImpl(String username){
         if(mongoTemplate == null) throw new RuntimeException("Mongo DB not initialized");
 
         Query qMaxTimestamp = new Query();
-        qMaxTimestamp.addCriteria(Criteria.where("user").exists(true));
+        qMaxTimestamp.addCriteria(Criteria.where("user").is(username));
 
         List<TimedPosition> l =
                 mongoTemplate.find(qMaxTimestamp, TimedPosition.class);

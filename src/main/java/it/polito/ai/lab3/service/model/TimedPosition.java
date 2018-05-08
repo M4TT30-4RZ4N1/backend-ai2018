@@ -28,6 +28,10 @@ public class TimedPosition extends Position {
         return user;
     }
 
+    public void setUser(String user){
+        this.user = user;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

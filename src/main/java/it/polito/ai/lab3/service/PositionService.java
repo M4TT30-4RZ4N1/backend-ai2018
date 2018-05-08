@@ -31,10 +31,14 @@ public class PositionService {
     }
 
     public synchronized void addToDB(String user, TimedPosition p){
+
+        // associate user to the position
+        p.setUser(user);
+        System.out.println("setted " + user);
         first = positionRepositoryImpl.findLastPositionImpl(user);
         if(first == null) {
             if(validator.validateFirst(p)) {
-                addPosition( p);
+                addPosition(p);
             }
         }
         else{
