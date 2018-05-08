@@ -25,8 +25,9 @@ public class RestUserController {
     public @ResponseBody
     List<TimedPosition> getPositionInInterval(@Param("after") Long after, @Param("before") Long before) {
         if(after == null || before == null) throw new RuntimeException("Missing parameters");
-        UserDetails user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return positionService.getPositionInInterval(user.getUsername(), new Date(after), new Date(before));
+        // --> UserDetails è stato convertito direttamente a String (diverso da slide) in quanto noi ritorniamo solo lo username
+        String user = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return positionService.getPositionInInterval(user, new Date(after), new Date(before));
     }
     @RequestMapping(value = "/positions", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)

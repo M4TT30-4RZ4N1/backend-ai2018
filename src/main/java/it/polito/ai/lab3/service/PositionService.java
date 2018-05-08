@@ -29,6 +29,7 @@ public class PositionService {
     private void addPosition(TimedPosition p){
         positionRepository.insert(p);
     }
+
     public synchronized void addToDB(String user, TimedPosition p){
         first = positionRepositoryImpl.findLastPositionImpl(user);
         if(first == null) {
@@ -54,7 +55,7 @@ public class PositionService {
     @PreAuthorize("hasRole( 'USER' )")
     public List<TimedPosition> getPositionInInterval(String user, Date after, Date before){
         List<TimedPosition> res = new ArrayList<>();
-        res.addAll(positionRepository.findByUserAndTimestampBetween(user, after.getTime(), before.getTime()));
+        res.addAll(positionRepositoryImpl.findByUserAndTimestampBetween(user, after.getTime(), before.getTime()));
         return res;
     }
     @PreAuthorize("hasRole( 'CUSTOMER' )")
