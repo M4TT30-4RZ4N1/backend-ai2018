@@ -20,12 +20,13 @@ public class PositionRepositoryImpl{
         if(mongoTemplate == null) throw new RuntimeException("Mongo DB not initialized");
 
         Query qMaxTimestamp = new Query();
-        qMaxTimestamp.addCriteria(Criteria.where("id").exists(true));
+        qMaxTimestamp.addCriteria(Criteria.where("user").exists(true));
 
         List<TimedPosition> l =
                 mongoTemplate.find(qMaxTimestamp, TimedPosition.class);
 
-       /* TimedPosition timedPosition = l.stream()
+        // calcolo max locale
+        TimedPosition timedPosition = l.stream()
                 .sorted((p1, p2) -> {
                     if(p1.getTimestamp().getTime() > p2.getTimestamp().getTime())
                         return 1;
@@ -35,18 +36,28 @@ public class PositionRepositoryImpl{
                 })
                 .findFirst().orElse(null);
 
+        //if(timedPosition != null)
+        //System.out.println("max found: " + timedPosition.timestamp);
+
         return timedPosition;
-        */
-       return l.get(0);
     }
 
-    public List<TimedPosition> findByUserAndTimestampBetween(String userId, long after, long before){
+    public List<TimedPosition> findByUserAndTimestampBetween(String username, long after, long before){
         if(mongoTemplate == null) throw new RuntimeException("Mongo DB not initialized");
         List<TimedPosition> tmp = new ArrayList<>();
         Query query = new Query();
-        query.addCriteria(Criteria.where("timestamp").gte(after).andOperator(Criteria.where("timestamp").lte(before)));
+        query.addCriteria(Criteria.where("user").is(username).andOperator(Criteria.where("timestamp").gte(after).andOperator(Criteria.where("timestamp").lte(before))));
         tmp = mongoTemplate.find(query, TimedPosition.class);
         return tmp;
     }
-        
+
+    public List<TimedPosition> findByUser(String username){
+        if(mongoTemplate == null) throw new RuntimeException("Mongo DB not initialized");
+
+        List<TimedPosition> tmp = new ArrayList<>();
+        Query query = new Query();
+        query.addCriteria(Criteria.where("user").is(username));
+        tmp = mongoTemplate.find(query, TimedPosition.class);
+        return tmp;
+    }
 }

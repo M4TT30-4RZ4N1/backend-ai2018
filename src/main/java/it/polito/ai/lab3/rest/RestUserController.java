@@ -24,7 +24,18 @@ public class RestUserController {
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
     List<TimedPosition> getPositionInInterval(@Param("after") Long after, @Param("before") Long before) {
+
+        // entrambi null?? eseguo una get di tutte le position
+        if(after == null && before == null){
+            // --> UserDetails è stato convertito direttamente a String (diverso da slide) in quanto noi ritorniamo solo lo username
+            String user = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            System.out.println("Getting positions of user: "+ user);
+            return positionService.getPositions(user);
+        }
+
+        // solo un parametro?? non valido!
         if(after == null || before == null) throw new RuntimeException("Missing parameters");
+
         // --> UserDetails è stato convertito direttamente a String (diverso da slide) in quanto noi ritorniamo solo lo username
         String user = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return positionService.getPositionInInterval(user, new Date(after), new Date(before));
@@ -37,5 +48,7 @@ public class RestUserController {
         for(TimedPosition position : positions)
             positionService.addToDB(username, position);
     }
+
+
 
 }

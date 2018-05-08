@@ -9,10 +9,6 @@ import java.util.List;
 @Repository
 public interface PositionRepository extends MongoRepository<TimedPosition, Long> {
 
-    List<TimedPosition> findByUser(String userId);
-
-    //List<TimedPosition> findByUserAndTimestampBetween(String userId, long after, long before);
-
     @Override
     List<TimedPosition> findAll();
 

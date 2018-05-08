@@ -11,6 +11,12 @@ public class TimedPosition extends Position {
         this.timestamp = timestamp;
     }
 
+    public TimedPosition(double lat, double lng, long timestamp, String user) {
+        super(lat, lng);
+        this.timestamp = timestamp;
+        this.user = user;
+    }
+
     public TimedPosition() {
     }
 

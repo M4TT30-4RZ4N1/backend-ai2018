@@ -38,7 +38,9 @@ public class PositionService {
             }
         }
         else{
+            //System.out.println("first: " + first.getTimestamp() + " second: "+ p.getTimestamp());
             if(validator.validateSequence(first, p)) {
+                //System.out.println("inside IF first: " + first.getTimestamp() + " second: "+ p.getTimestamp());
                 addPosition(p);
             }
         }
@@ -48,7 +50,7 @@ public class PositionService {
     @PreAuthorize("hasRole( 'USER' )")
     public List<TimedPosition> getPositions(String user){
         List<TimedPosition> res = new ArrayList<>();
-        res.addAll(positionRepository.findByUser(user));
+        res.addAll(positionRepositoryImpl.findByUser(user));
         return res;
     }
 
