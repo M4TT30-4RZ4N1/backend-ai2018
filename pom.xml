@@ -79,6 +79,15 @@
 			<artifactId>commons-io</artifactId>
 			<version>1.3.2</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.wololo/jts2geojson -->
+		<dependency>
+			<groupId>org.wololo</groupId>
+			<artifactId>jts2geojson</artifactId>
+			<version>0.11.0</version>
+		</dependency>
+
+
 	</dependencies>
 
 	<dependencyManagement>

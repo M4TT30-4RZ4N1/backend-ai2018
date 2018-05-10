@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.wololo.geojson.Polygon;
 
 import javax.servlet.http.HttpSession;
 import java.util.Date;
@@ -29,10 +30,10 @@ public class RestCustomerController {
     @RequestMapping(value="/listPositions", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
-    String getPositionInIntervalInPolygon(HttpSession session, RedirectAttributes redirect, @RequestBody List<GeoJsonPoint> points, @Param("after") Long after, @Param("before") Long before) {
+    String getPositionInIntervalInPolygon(HttpSession session, RedirectAttributes redirect, @RequestBody Polygon polygon, @Param("after") Long after, @Param("before") Long before) {
 
         // this is used to redirect to the getPositions url and save data in the session
-        List<TimedPosition> polygonPositions = positionService.getPositionInIntervalInPolygon(points, new Date(after), new Date(before));
+        List<TimedPosition> polygonPositions = positionService.getPositionInIntervalInPolygon(polygon, new Date(after), new Date(before));
 
         // save positions into session object for the eventually transaction of customer
         session.setAttribute("positions",polygonPositions);

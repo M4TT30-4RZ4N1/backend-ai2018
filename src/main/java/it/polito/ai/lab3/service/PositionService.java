@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
+import org.wololo.geojson.Polygon;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -66,9 +67,9 @@ public class PositionService {
         return res;
     }
     @PreAuthorize("hasRole( 'CUSTOMER' )")
-    public List<TimedPosition> getPositionInIntervalInPolygon(List<GeoJsonPoint> points, Date after, Date before){
+    public List<TimedPosition> getPositionInIntervalInPolygon(Polygon polygon, Date after, Date before){
         List<TimedPosition> res = new ArrayList<>();
-        res.addAll(positionRepositoryImpl.getPositionInIntervalInPolygon(points, after.getTime(), before.getTime()));
+        res.addAll(positionRepositoryImpl.getPositionInIntervalInPolygon(polygon, after.getTime(), before.getTime()));
         return res;
     }
 

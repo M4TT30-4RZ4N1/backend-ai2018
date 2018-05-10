@@ -35,9 +35,9 @@ public class Lab3Application {
 
             // save a couple of customers
             //positionRepository.save(new TimedPosition(45.00, 47.00, new Date().getTime()));
-            positionRepository.save(new TimedPosition(45.00, 47.00, new Date().getTime(), "testuser"));
+            positionRepository.save(new TimedPosition(55.00, 47.00, new Date().getTime(), "testuser"));
             positionRepository.save(new TimedPosition(45.20, 47.00, new Date().getTime(), "testuser"));
-            positionRepository.save(new TimedPosition(50.00, 47.00, new Date().getTime(), "testuser"));
+            positionRepository.save(new TimedPosition(57.00, 47.00, new Date().getTime(), "testuser"));
 
 
 

@@ -6,38 +6,40 @@ import java.util.Objects;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
+import org.wololo.geojson.Point;
 
 public class Position {
     @Id
     public String id;
     @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
-    public GeoJsonPoint point;
+    public Point point;
 
     public Position(){}
 
     public Position(double lat, double lng) {
-        this.point = new GeoJsonPoint(lng, lat);
+        double array[] = {lng, lat};
+        this.point = new Point(array);
     }
 
-    public double getLat() {
-        return point.getY();
+    public double retriveLat() {
+        return point.getCoordinates()[1];
     }
 
-    public double getLng() {
-        return point.getX();
+    public double retrieveLng() {
+        return  point.getCoordinates()[0];
     }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Position position = (Position) o;
-        return Double.compare(position.getLat(), this.getLat()) == 0 &&
-                Double.compare(position.getLng(), this.getLng()) == 0;
+        return Double.compare(position.retriveLat(), this.retriveLat()) == 0 &&
+                Double.compare(position.retrieveLng(), this.retrieveLng()) == 0;
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(getLat(), getLng());
+        return Objects.hash(retriveLat(), retrieveLng());
     }
 }

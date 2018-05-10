@@ -32,7 +32,7 @@ public class Validator {
             return false;
         }
         // check distance/time < 100 ms
-        double distance = Haversine.distance(t1.getLat(), t1.getLng(), t2.getLat(), t2.getLng());
+        double distance = Haversine.distance(t1.retriveLat(), t1.retrieveLng(), t2.retriveLat(), t2.retrieveLng());
         long diffTime = t2.getTimestamp().getTime() - t1.getTimestamp().getTime();
         if(diffTime == 0){
             return false;
@@ -52,10 +52,10 @@ public class Validator {
             return false;
         }
         // check -90.00 <= lat <= +90.00  and -180.00 <= long <= +180.00
-        if(t.getLat()> lat_sup || t.getLat() < lat_inf){
+        if(t.retriveLat()> lat_sup || t.retriveLat() < lat_inf){
             return false;
         }
-        if(t.getLng()> long_sup || t.getLng() < long_inf){
+        if(t.retrieveLng()> long_sup || t.retrieveLng() < long_inf){
             return false;
         }
 

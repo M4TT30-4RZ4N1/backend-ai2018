@@ -3,13 +3,12 @@ package it.polito.ai.lab3.service.repositories;
 import it.polito.ai.lab3.service.model.TimedPosition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.Point;
-import org.springframework.data.geo.Polygon;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.stereotype.Repository;
+import org.wololo.geojson.Polygon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,16 +66,17 @@ public class PositionRepositoryImpl{
         return tmp;
     }
 
-    public List<TimedPosition> getPositionInIntervalInPolygon(List<GeoJsonPoint> jsonPoints, long after, long before){
+    public List<TimedPosition> getPositionInIntervalInPolygon(Polygon jsonpolygon, long after, long before){
 
         List<TimedPosition> result = null;
-
-        List<Point> points = jsonPoints.stream()
-                                        .map(j -> new Point(j.getX(), j.getY()))
-                                        .collect(Collectors.toList());
-        // assume that the first and the last points are equal
-        Polygon polygon = new Polygon(points);
-
+        List<Point> springPoints = new ArrayList<>();
+        for (int i = 0; i < jsonpolygon.getCoordinates().length; i++) {
+            for (int j = 0; j < jsonpolygon.getCoordinates()[i].length; j++) {
+                springPoints.add(new Point(jsonpolygon.getCoordinates()[i][j][1], jsonpolygon.getCoordinates()[i][j][0]));
+            }
+        }
+        org.springframework.data.geo.Polygon polygon =
+                new org.springframework.data.geo.Polygon(springPoints);
         Query query = new Query();
         query.addCriteria(Criteria.where("timestamp").gte(after)
                 .andOperator(Criteria.where("timestamp").lte(before))

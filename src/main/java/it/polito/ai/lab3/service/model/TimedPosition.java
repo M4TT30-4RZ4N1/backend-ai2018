@@ -50,8 +50,8 @@ public class TimedPosition extends Position {
     @Override
     public String toString() {
         return "TimedPosition{" +
-                "latitude=" + getLat() +
-                "longitude=" + getLng() +
+                "latitude=" + retriveLat() +
+                "longitude=" + retrieveLng() +
                 "timestamp=" + timestamp +
                 '}';
     }
