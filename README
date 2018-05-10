@@ -1,0 +1,12 @@
+modificare application.properties
+spring.data.mongodb.host=db
+spring.data.mongodb.port=27017
+
+lanciare:
+mvn package -Dskiptest
+
+docker build -t r4ffy/lab3 .
+
+docker push (vi servono le credenziali quindi non fatelo)
+
+docker-compose up
