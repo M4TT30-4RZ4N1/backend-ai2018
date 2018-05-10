@@ -5,14 +5,15 @@ import it.polito.ai.lab3.service.PositionService;
 import it.polito.ai.lab3.service.model.CustomerTransaction;
 import it.polito.ai.lab3.service.model.TimedPosition;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -25,25 +26,50 @@ public class RestCustomerController {
     private CustomerTransactionService transactionService;
     @Autowired
     private PositionService positionService;
-    @RequestMapping(value="/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value="/listPositions", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
-    List<TimedPosition> getPositionInIntervalInPolygon(@Param("after") Long after, @Param("before") Long before) {
-        return positionService.getPositionInIntervalInPolygon(new Date(after), new Date(before));
+    String getPositionInIntervalInPolygon(HttpSession session, RedirectAttributes redirect, @RequestBody List<GeoJsonPoint> points, @Param("after") Long after, @Param("before") Long before) {
+
+        // this is used to redirect to the getPositions url and save data in the session
+        List<TimedPosition> polygonPositions = positionService.getPositionInIntervalInPolygon(points, new Date(after), new Date(before));
+
+        // save positions into session object for the eventually transaction of customer
+        session.setAttribute("positions",polygonPositions);
+
+        // set redirect attribute
+        redirect.addFlashAttribute("positions", polygonPositions);
+
+        return "redirect::getPositions";
     }
-    @RequestMapping(value = "/", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+
+    // here there is the real method get that return the count on the object saved in session
+    @RequestMapping(value="/getPositions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value = HttpStatus.OK)
+    public @ResponseBody
+    Integer getPositionInInterval(@ModelAttribute("positions") List<TimedPosition> polygonPositions) {
+        return polygonPositions.size();
+    }
+
+    @RequestMapping(value = "/buyPositions", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
     public @ResponseBody
-    void confirmTransaction(@RequestBody List<TimedPosition> positions) {
+    void confirmTransaction(HttpSession session) {
+
+        List<TimedPosition> positions = (List<TimedPosition>)session.getAttribute("positions");
+
         Map<String, Long> rawTransactions = positions.stream()
                                                     .map(p -> p.getUser())
                                                     .collect(Collectors.groupingBy(u -> u, Collectors.counting()));
-        UserDetails user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        // get username
+        String user = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         for(Map.Entry<String, Long> user_nPositions : rawTransactions.entrySet()){
                 CustomerTransaction transaction = new CustomerTransaction();
-                transaction.setCustomerId(user.getUsername());
+                transaction.setCustomerId(user);
                 transaction.setUserId(user_nPositions.getKey());
                 transaction.setnPositions(user_nPositions.getValue().intValue());
+                transaction.setPrice(1); // PRICE SET TO 1
                 transactionService.addTransaction(transaction);
         }
     }

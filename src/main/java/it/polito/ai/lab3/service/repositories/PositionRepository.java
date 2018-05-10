@@ -12,6 +12,8 @@ public interface PositionRepository extends MongoRepository<TimedPosition, Long>
     @Override
     List<TimedPosition> findAll();
 
+
+
     //db.TimedPositions.find().sort({timestamp:-1}).limit(1) for MAX
     //db.TimedPositions.find().sort({timestamp:+1}).limit(1) for MIN
 

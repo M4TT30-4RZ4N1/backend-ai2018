@@ -28,8 +28,8 @@ public class Lab3Application {
         return args -> {
             System.out.println("Running initialization");
             userRepository.deleteAll();
-            userRepository.save(new User());
-            userRepository.save(new User("testadmin","testpassword","ROLE_ADMI\"testuser\",\"testpassword\",\"ROLE_USER\"N"));
+            userRepository.save(new User("testuser","testpassword","ROLE_USER"));
+            userRepository.save(new User("testadmin","testpassword","ROLE_ADMIN"));
             userRepository.save(new User("testcustomer","testpassword","ROLE_CUSTOMER"));
             positionRepository.deleteAll();
 
@@ -44,8 +44,8 @@ public class Lab3Application {
             // fetch all customers
             System.out.println("Customers found with findAll():");
             System.out.println("-------------------------------");
-            for (TimedPosition postion : positionRepository.findAll()) {
-                System.out.println(postion);
+            for (TimedPosition position : positionRepository.findAll()) {
+                System.out.println(position);
             }
             System.out.println();
         };

@@ -5,6 +5,7 @@ import it.polito.ai.lab3.service.model.TimedPosition;
 import it.polito.ai.lab3.service.repositories.PositionRepositoryImpl;
 import it.polito.ai.lab3.service.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
@@ -65,9 +66,9 @@ public class PositionService {
         return res;
     }
     @PreAuthorize("hasRole( 'CUSTOMER' )")
-    public List<TimedPosition> getPositionInIntervalInPolygon(Date after, Date before){
+    public List<TimedPosition> getPositionInIntervalInPolygon(List<GeoJsonPoint> points, Date after, Date before){
         List<TimedPosition> res = new ArrayList<>();
-        //res.addAll(positionRepository.findByUserIdAndTimestampAfterAndTimestampBeforeafter.getTime(), before.getTime()));
+        res.addAll(positionRepositoryImpl.getPositionInIntervalInPolygon(points, after.getTime(), before.getTime()));
         return res;
     }
 

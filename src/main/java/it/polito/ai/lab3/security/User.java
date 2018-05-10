@@ -29,6 +29,7 @@ public class User implements UserDetails {
         this.accountNonLocked = accountNonLocked;
         this.credentialsNonExpired = credentialsNonExpired;
         this.enabled = enabled;
+
     }
 
     public  User(String username, String plainpassword, String role){

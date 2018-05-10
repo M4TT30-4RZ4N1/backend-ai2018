@@ -3,8 +3,7 @@ package it.polito.ai.lab3.service.model;
 import org.springframework.data.annotation.Id;
 
 import java.util.Objects;
-import org.mongodb.morphia.geo.Point;
-import org.mongodb.morphia.geo.GeoJson;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 
@@ -12,20 +11,20 @@ public class Position {
     @Id
     public String id;
     @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
-    public Point point;
+    public GeoJsonPoint point;
 
     public Position(){}
 
     public Position(double lat, double lng) {
-        this.point = GeoJson.point(lat, lng);
+        this.point = new GeoJsonPoint(lng, lat);
     }
 
     public double getLat() {
-        return point.getLatitude();
+        return point.getY();
     }
 
     public double getLng() {
-        return point.getLongitude();
+        return point.getX();
     }
     @Override
     public boolean equals(Object o) {

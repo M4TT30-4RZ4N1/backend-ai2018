@@ -2,7 +2,9 @@ package it.polito.ai.lab3.service.repositories;
 
 import it.polito.ai.lab3.service.model.TimedPosition;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.geo.Polygon;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
@@ -59,5 +61,16 @@ public class PositionRepositoryImpl{
         query.addCriteria(Criteria.where("user").is(username));
         tmp = mongoTemplate.find(query, TimedPosition.class);
         return tmp;
+    }
+
+    public List<TimedPosition> getPositionInIntervalInPolygon(List<GeoJsonPoint> points, long after, long before){
+
+        List<TimedPosition> result = null;
+        Query query = new Query();
+        query.addCriteria(Criteria.where("timestamp").gte(after).andOperator(Criteria.where("timestamp").lte(before)));
+        Polygon polygon = null;
+        Criteria.where("point").within(polygon);
+
+        return result;
     }
 }
