@@ -28,8 +28,8 @@ public class Lab3Application {
         return args -> {
             System.out.println("Running initialization");
             userRepository.deleteAll();
-            userRepository.save(new User("testuser","testpassword","ROLE_USER"));
-            userRepository.save(new User("testadmin","testpassword","ROLE_ADMIN"));
+            userRepository.save(new User());
+            userRepository.save(new User("testadmin","testpassword","ROLE_ADMI\"testuser\",\"testpassword\",\"ROLE_USER\"N"));
             userRepository.save(new User("testcustomer","testpassword","ROLE_CUSTOMER"));
             positionRepository.deleteAll();
 
