@@ -3,37 +3,42 @@ package it.polito.ai.lab3.service.model;
 import org.springframework.data.annotation.Id;
 
 import java.util.Objects;
+import org.mongodb.morphia.geo.Point;
+import org.mongodb.morphia.geo.GeoJson;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
+
 public class Position {
     @Id
     public String id;
-    public double lat, lng;
+    @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
+    public Point point;
 
     public Position(){}
 
     public Position(double lat, double lng) {
-        this.lat = lat;
-        this.lng = lng;
+        this.point = GeoJson.point(lat, lng);
     }
 
     public double getLat() {
-        return lat;
+        return point.getLatitude();
     }
 
     public double getLng() {
-        return lng;
+        return point.getLongitude();
     }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Position position = (Position) o;
-        return Double.compare(position.lat, lat) == 0 &&
-                Double.compare(position.lng, lng) == 0;
+        return Double.compare(position.getLat(), this.getLat()) == 0 &&
+                Double.compare(position.getLng(), this.getLng()) == 0;
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(lat, lng);
+        return Objects.hash(getLat(), getLng());
     }
 }
