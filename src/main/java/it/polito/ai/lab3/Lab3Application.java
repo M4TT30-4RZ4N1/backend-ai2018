@@ -2,7 +2,9 @@ package it.polito.ai.lab3;
 
 import it.polito.ai.lab3.security.User;
 import it.polito.ai.lab3.security.UserRepository;
+import it.polito.ai.lab3.service.model.CustomerTransaction;
 import it.polito.ai.lab3.service.model.TimedPosition;
+import it.polito.ai.lab3.service.repositories.CustomerTransactionRepository;
 import it.polito.ai.lab3.service.repositories.PositionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -18,6 +20,8 @@ public class Lab3Application {
     PositionRepository positionRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    CustomerTransactionRepository transactionRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(Lab3Application.class, args);
@@ -42,10 +46,16 @@ public class Lab3Application {
 
 
             // fetch all customers
-            System.out.println("Customers found with findAll():");
+            System.out.println("Positions found with findAll():");
             System.out.println("-------------------------------");
             for (TimedPosition position : positionRepository.findAll()) {
                 System.out.println(position);
+            }
+            System.out.println();
+            System.out.println("Transactions found with findAll():");
+            System.out.println("-------------------------------");
+            for (CustomerTransaction transaction : transactionRepository.findAll()) {
+                System.out.println(transaction);
             }
             System.out.println();
         };

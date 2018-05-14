@@ -10,8 +10,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 import org.wololo.geojson.Polygon;
 
 import javax.servlet.http.HttpSession;
@@ -30,22 +33,23 @@ public class RestCustomerController {
     @RequestMapping(value="/listPositions", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
-    String getPositionInIntervalInPolygon(HttpSession session, RedirectAttributes redirect, @RequestBody Polygon polygon, @Param("after") Long after, @Param("before") Long before) {
+    Integer getPositionInIntervalInPolygon(HttpSession session, RedirectAttributes redirect,
+                                                @RequestBody Polygon polygon,
+                                                @Param("after") Long after, @Param("before") Long before) {
 
         // this is used to redirect to the getPositions url and save data in the session
         List<TimedPosition> polygonPositions = positionService.getPositionInIntervalInPolygon(polygon, new Date(after), new Date(before));
 
-        // save positions into session object for the eventually transaction of customer
+        // save positions into session object for customer possible transaction
         session.setAttribute("positions",polygonPositions);
 
         // set redirect attribute
         redirect.addFlashAttribute("positions", polygonPositions);
-
-        return "redirect::getPositions";
+        return polygonPositions.size();
     }
 
     // here there is the real method get that return the count on the object saved in session
-    @RequestMapping(value="/getPositions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value="/getPositions", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
     Integer getPositionInInterval(@ModelAttribute("positions") List<TimedPosition> polygonPositions) {

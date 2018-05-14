@@ -3,7 +3,6 @@ package it.polito.ai.lab3.service.model;
 import org.springframework.data.annotation.Id;
 
 import java.util.Objects;
-import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.wololo.geojson.Point;
@@ -19,6 +18,22 @@ public class Position {
     public Position(double lat, double lng) {
         double array[] = {lng, lat};
         this.point = new Point(array);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Point getPoint() {
+        return point;
+    }
+
+    public void setPoint(Point point) {
+        this.point = point;
     }
 
     public double retriveLat() {

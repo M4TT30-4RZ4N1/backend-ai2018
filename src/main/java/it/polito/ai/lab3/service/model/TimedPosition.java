@@ -1,8 +1,10 @@
 package it.polito.ai.lab3.service.model;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.Date;
 import java.util.Objects;
-
+@Document(collection = "positions")
 public class TimedPosition extends Position {
     public long timestamp;
     public String user;

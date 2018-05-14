@@ -1,8 +1,9 @@
 package it.polito.ai.lab3.service.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-
+@Document(collection="transactions")
 public class CustomerTransaction {
     @Id
     private String customerId;
@@ -47,5 +48,15 @@ public class CustomerTransaction {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    @Override
+    public String toString() {
+        return "CustomerTransaction{" +
+                "customerId='" + customerId + '\'' +
+                ", userId='" + userId + '\'' +
+                ", nPositions=" + nPositions +
+                ", price=" + price +
+                '}';
     }
 }
