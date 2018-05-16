@@ -30,7 +30,7 @@ public class RestCustomerController {
     private CustomerTransactionService transactionService;
     @Autowired
     private PositionService positionService;
-    @RequestMapping(value="/listPositions", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value="/searchPositions", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
     Integer getPositionInIntervalInPolygon(HttpSession session, RedirectAttributes redirect,
@@ -48,21 +48,14 @@ public class RestCustomerController {
         return polygonPositions.size();
     }
 
-    // here there is the real method get that return the count on the object saved in session
-    @RequestMapping(value="/getPositions", method = RequestMethod.GET)
-    @ResponseStatus(value = HttpStatus.OK)
-    public @ResponseBody
-    Integer getPositionInInterval(@ModelAttribute("positions") List<TimedPosition> polygonPositions) {
-        return polygonPositions.size();
-    }
-
     @RequestMapping(value = "/buyPositions", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
     public @ResponseBody
     void confirmTransaction(HttpSession session) {
 
         List<TimedPosition> positions = (List<TimedPosition>)session.getAttribute("positions");
-
+        double totalPrice = 100;
+        double positionPrice = totalPrice/positions.size();
         Map<String, Long> rawTransactions = positions.stream()
                                                     .map(p -> p.getUser())
                                                     .collect(Collectors.groupingBy(u -> u, Collectors.counting()));
@@ -70,11 +63,12 @@ public class RestCustomerController {
         String user = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         for(Map.Entry<String, Long> user_nPositions : rawTransactions.entrySet()){
+                int nPositions = user_nPositions.getValue().intValue();
                 CustomerTransaction transaction = new CustomerTransaction();
                 transaction.setCustomerId(user);
                 transaction.setUserId(user_nPositions.getKey());
-                transaction.setnPositions(user_nPositions.getValue().intValue());
-                transaction.setPrice(1); // PRICE SET TO 1
+                transaction.setnPositions(nPositions);
+                transaction.setPrice(nPositions*positionPrice); // PRICE SET TO 1
                 transactionService.addTransaction(transaction);
         }
     }
