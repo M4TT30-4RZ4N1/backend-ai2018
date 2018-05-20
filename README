@@ -1,8 +1,30 @@
-modify application.properties with
-spring.data.mongodb.host=db
-spring.data.mongodb.port=27017
+1) Nel file ./src/main/resources/application.properties modificare le prime tre righe del file con:
+    spring.data.mongodb.host=db
+    spring.data.mongodb.port=27017
+    spring.data.mongodb.database=db
 
-execute commands:
-mvn package -Dskiptest
-docker build -t r4ffy/lab3 .
-docker-compose up
+2) Per eseguire l'applicazione sviluppata lanciare da shell di comando, nella cartella Root del progetto:
+    > mvn package -Dskiptest
+    > docker build -t r4ffy/lab3 .
+    > docker-compose up
+
+3) Nella cartella resources è disponibile un file postman_collection.json che se opportunamente importato tramite l'applicazione
+   Postman, consente di accedere ad alcune delle principali richieste http utilizzate dal nostro gruppo per testare
+   il corretto funzionamento dell'applicativo.
+
+4) Nella package it.polito.ai.lab3.security è possibile trovare le classi java che permettono la configurazione
+   dell'autenticazione tramite oauth2 per i tre diversi profili (admin, customer, user). Il meccanismo di autenticazione
+   si basa su JWT.
+
+5) Nel package it.polito.ai.lab3.rest è possibile trovare le classi dei tre controllori principali (uno per diverso profilo
+   di utente.
+
+6) Nel package it.polito.ai.lab3.repositories è possibile trovare alcune Interfacce che estendono MongoRepository,
+   per implementare invece alcune delle query più complesse e che necessitavano una maggiore personalizzazione abbiamo
+   creato PositionRepositoryImpl.java.
+
+7) Le funzionalità principali del servizio offerto dal nostro applicativo (in base ai diversi ruoli/permessi) sono raccolte
+   nel file PositionService.java, mentre il servizio di transazione nel file CustomerTransactionService.java.
+   Entrambi i file sono salvati all'interno del package it.polito.ai.lab3.
+
+
