@@ -24,7 +24,7 @@ public class OAuth2ResourceServerConfigJwt extends ResourceServerConfigurerAdapt
      */
     @Override
     public void configure(final HttpSecurity http) throws Exception {
-                http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                http.cors().and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                     .and()
                     .authorizeRequests().antMatchers("/admin/**").hasRole("ADMIN")
                     .and()
