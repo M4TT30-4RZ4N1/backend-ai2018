@@ -12,7 +12,7 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
-
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 
 @Configuration
@@ -24,7 +24,7 @@ public class OAuth2ResourceServerConfigJwt extends ResourceServerConfigurerAdapt
      */
     @Override
     public void configure(final HttpSecurity http) throws Exception {
-                http.cors().and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                http.addFilterBefore(new CorsFilter(), BasicAuthenticationFilter.class).cors().and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                     .and()
                     .authorizeRequests().antMatchers("/admin/**").hasRole("ADMIN")
                     .and()
