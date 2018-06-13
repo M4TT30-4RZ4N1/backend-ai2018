@@ -22,8 +22,8 @@ public class TimedPosition extends Position {
     public TimedPosition() {
     }
 
-    public long getTimestamp() {
-        return timestamp;
+    public Date getTimestamp() {
+        return new Date(timestamp);
     }
 
     public String getUser() {
