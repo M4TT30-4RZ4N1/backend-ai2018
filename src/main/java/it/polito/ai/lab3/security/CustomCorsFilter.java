@@ -22,7 +22,7 @@ public class CustomCorsFilter extends OncePerRequestFilter {
     @Value("${custom.cors.allowMethods:GET, POST, PUT, DELETE, OPTIONS}")
     private String allowMethods;
 
-    @Value("${custom.cors.allowHeaders:Content-Type}")
+    @Value("${custom.cors.allowHeaders:Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With}")
     private String allowHeaders;
 
     @Value("${custom.cors.allowCredentials:true}")
