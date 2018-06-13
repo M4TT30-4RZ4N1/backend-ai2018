@@ -46,9 +46,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/login").permitAll()
+		http.cors().and().authorizeRequests().antMatchers("/login").permitAll()
 		.antMatchers("/tokens/**").permitAll()
 		.anyRequest().authenticated();
+    }
+    @Bean
+	CorsConfigurationSource corsConfigurationSource() {
+	CorsConfiguration configuration = new CorsConfiguration();
+	configuration.setAllowedOrigins(Arrays.asList("*"));
+	configuration.setAllowedMethods(Arrays.asList("GET","POST"));
+	UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+	source.registerCorsConfiguration("/**", configuration);
+	return source;
     }
 
 }
