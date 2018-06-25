@@ -1,18 +1,22 @@
 package it.polito.ai.project.service;
 
+import it.polito.ai.project.service.model.ClientInteraction.PositionResult;
+import it.polito.ai.project.service.model.ClientInteraction.SearchResult;
+import it.polito.ai.project.service.model.ClientInteraction.TimestampResult;
+import it.polito.ai.project.service.model.ClientInteraction.UserResult;
+import it.polito.ai.project.service.model.Position;
 import it.polito.ai.project.service.repositories.PositionRepository;
 import it.polito.ai.project.service.model.TimedPosition;
 import it.polito.ai.project.service.repositories.PositionRepositoryImpl;
 import it.polito.ai.project.service.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.wololo.geojson.Polygon;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+
 @Component
 public class PositionService {
     @Autowired
@@ -71,7 +75,18 @@ public class PositionService {
         res.addAll(positionRepositoryImpl.getPositionInIntervalInPolygon(polygon, after.getTime(), before.getTime()));
         return res;
     }
-
+    @PreAuthorize("hasRole( 'CUSTOMER' )")
+    public SearchResult getApproximatePositionInIntervalInPolygonInUserList(Polygon polygon, Date after, Date before, List<String> users){
+        List<TimedPosition> res = new ArrayList<>();
+        res.addAll(positionRepositoryImpl.getApproximatePositionInIntervalInPolygonInUserList(polygon, after.getTime(), before.getTime(),users));
+        SearchResult searchResult=new SearchResult();
+        searchResult.byTimestamp=res.stream().map(timedPosition -> new TimestampResult(timedPosition.user,Math.round(timedPosition.timestamp/60))).distinct().collect(Collectors.toList());
+        searchResult.byPosition=res.stream().map(timedPosition ->{timedPosition.trimPrecsion(); return new PositionResult(timedPosition.user, timedPosition.point);}).distinct().collect(Collectors.toList());
+        searchResult.byUser=res.stream().map(timedPosition -> new UserResult(timedPosition.user,"blue")).distinct().collect(Collectors.toList());
+        Collections.shuffle(searchResult.byPosition);
+        Collections.shuffle(searchResult.byTimestamp);
+        return searchResult;
+    }
     @PreAuthorize("hasRole( 'ADMIN' )")
     public List<TimedPosition> getPositions(){
         List<TimedPosition> res = new ArrayList<>();

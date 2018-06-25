@@ -4,6 +4,7 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import it.polito.ai.project.service.model.TimedPosition;
+import it.polito.ai.project.service.model.UserArchive;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.geo.Point;
@@ -108,6 +109,31 @@ public class PositionRepositoryImpl{
         System.out.println(finalQuery.toString());
         BasicQuery query = new BasicQuery(timestampQuery.toString());
         result= mongoTemplate.find(query, TimedPosition.class);
+        System.out.println(result);
+        return result;
+    }
+
+    public List<TimedPosition> getApproximatePositionInIntervalInPolygonInUserList(Polygon jsonpolygon, long after, long before,List<String> user) {
+        if(mongoTemplate == null) throw new RuntimeException("Mongo DB not initialized");
+        List<TimedPosition> result = null;
+        List<Point> springPoints = new ArrayList<>();
+        for (int i = 0; i < jsonpolygon.getCoordinates().length; i++) {
+            for (int j = 0; j < jsonpolygon.getCoordinates()[i].length; j++) {
+                springPoints.add(new Point(jsonpolygon.getCoordinates()[i][j][1], jsonpolygon.getCoordinates()[i][j][0]));
+            }
+        }
+        org.springframework.data.geo.Polygon polygon =
+                new org.springframework.data.geo.Polygon(springPoints);
+        Query query = new Query();
+        query.addCriteria(Criteria.where("content").elemMatch(
+                    Criteria.where("timestamp").gt(before).lt(after)
+                            .and("point").within(polygon)));
+        query.addCriteria(Criteria.where("owner").in(user));
+        result= mongoTemplate.find(query,UserArchive.class)
+                .stream().map(userArchive -> {
+            userArchive.getContent().forEach(timedPosition -> timedPosition.user=userArchive.getOwner());
+            return  userArchive.getContent();
+        }).flatMap(List::stream).collect(Collectors.toList());
         System.out.println(result);
         return result;
     }

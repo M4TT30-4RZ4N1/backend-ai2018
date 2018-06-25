@@ -9,6 +9,9 @@ import java.util.List;
 public class UserArchive {
     @Id
     public String id;
+
+
+
     private String owner;
     public String filename;
     public int counter;
@@ -17,7 +20,13 @@ public class UserArchive {
 
     public UserArchive() {
     }
-
+    public UserArchive(String owner, String filename, List<TimedPosition> content) {
+        this.owner = owner;
+        this.filename = filename;
+        this.counter = 0;
+        this.deleted = false;
+        this.content = content;
+    }
     public UserArchive(String owner, String filename, int counter, boolean deleted, List<TimedPosition> content) {
         this.owner = owner;
         this.filename = filename;
@@ -25,7 +34,13 @@ public class UserArchive {
         this.deleted = deleted;
         this.content = content;
     }
+    public String getOwner() {
+        return owner;
+    }
 
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
     public String getFilename() {
         return filename;
     }

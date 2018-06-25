@@ -2,6 +2,7 @@ package it.polito.ai.project.service.model;
 
 import org.springframework.data.annotation.Id;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
@@ -19,7 +20,15 @@ public class Position {
         double array[] = {lng, lat};
         this.point = new Point(array);
     }
-
+    public void trimPrecsion(){
+        this.point.getCoordinates()[0]=round(this.point.getCoordinates()[0],2);
+        this.point.getCoordinates()[1]=round(this.point.getCoordinates()[1],2);
+    }
+    private static double round(double d, int decimalPlace) {
+        BigDecimal bd = new BigDecimal(Double.toString(d));
+        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
+        return bd.doubleValue();
+    }
     public String getId() {
         return id;
     }
