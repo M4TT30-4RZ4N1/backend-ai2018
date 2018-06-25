@@ -1,6 +1,9 @@
 language: java
 jdk: oraclejdk8
-script: mvn package --Dmaven.test.skip=true
+before_install:
+  - chmod +x mvnw
+script:
+  - mvn package -Dmaven.test.skip=true
 deploy:
   provider: cloudfoundry
   api: https://api.eu-de.bluemix.net
@@ -9,6 +12,3 @@ deploy:
     secure: dvspQC+E/pFSQVVPnxXwRBI6yrErywEmTBQRdrgKfnHJqe9470l/gIGcyvrfGS0DgHtKgPyl9suGJGmKtVsisIMYCeT6r6CC5/vE7HDXSzWjtfxkGWcXb7i0gwNx89yGbcplAW1y61gquh1aRpKPuIsNbyOcq3uytmw/ihrTOYa/pBlrtuRxR46WNqUzGfaP9w+oAfxqPg4wfZLmzWULzlaLdls6JHQAlX7S7xdIF7Vx1kqMsYRFkjShbbE44/BnNAU51Wmzy4pj8F8xBvVPyeDa+HKbzNTsDK7FUYWHrCQIeGbAo6zuCgKS7KST9xQ3LpLLUgIqwojVnMWNVYXmgJP0Ck93FpQF0sPBYzpAvpm01cAeZMU2TZjNkeUh4Wy8csM+jztW/Bcd81lYr4tz7yZjkHYIou5HE3cKydxXPEIsFWD0ut06imo6Gl/CF1ZhWr9FMLs1FCo9BLiQ93UnsFQhIWW9RU6GVDNA7UtoIHDa4qV1wngeCglJPxZtE1pEsf4NvkbiBuVqBKcJZuETGe5oNK1d5KbMV9m7wBH+3GBSuq7tq6V97i/2RftWVOwgcctODTNofeTmwmkscj28NgmJ6I65f+MuVc2oTM8nCFkieXxf2d71TrNpVIDXoW9owOb1lOzmSxxzD60P8ZwAWfjgVvc6RL3syJoaUFJGrrs=
   organization: raffysommy
   space: dev
-  on:
-    repo: raffysommy/backend-ai2018
-    branch: ''
