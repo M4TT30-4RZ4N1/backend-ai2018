@@ -1,3 +1,8 @@
+You can found me here:
+https://backendpolito.eu-de.mybluemix.net/
+Travis:
+[![Build Status](https://travis-ci.com/raffysommy/backend-ai2018.svg?token=uXjDgNqngmeREVzts9Qv&branch=master)](https://travis-ci.com/raffysommy/backend-ai2018)
+
 1) Modify ./src/main/resources/application.properties with:
     spring.data.mongodb.host=db
     spring.data.mongodb.port=27017
