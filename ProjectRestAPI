@@ -1,0 +1,14 @@
+PROGETTO AI 2018 REST API
+
+GET /guest/checkUser -> API per vedere se l'username già esiste (come query parameter serve l'username)
+POST /guest/register -> API per registrare un utente (come body serve un RegistrationDetails)
+
+POST /user/positions -> API per salvare delle posizioni nel DB (per ora come body riceve lo stesso body di sempre (array di TimedPosition),in questo caso sarebbe da gestire nel client il fatto di prendere ogni file e riversane il contenuto nel body della richiesta)
+GET /user/archives/self -> API per vedere i propri archivi caricati e non cancellati (restituisce un array di oggetti che contengono filename e counter)
+GET /user/archives/purchased -> API per vedere gli archivi acquistati (restituisce un semplice array di stringhe dei filename dato che non può sapere il numero di volte che sono stati acquistati)
+POST /user/archives/download -> API per scaricare un insieme di archivi (il body è l'array di stringhe dei filename)
+DELETE /user/archives/delete -> API per eliminare un insieme di archivi (il body è l'array di stringhe dei filename)
+
+//non ancora aggiornati
+POST /customer/search
+POST /customer/buy

@@ -4,4 +4,4 @@ applications:
   instances: 1
   host: backendpolito
   buildpack: java_buildpack
-  path: ./target/lab3-0.0.1-SNAPSHOT.jar
+  path: ./target/project-0.0.1-SNAPSHOT.jar

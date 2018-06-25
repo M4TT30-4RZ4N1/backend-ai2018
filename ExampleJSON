@@ -1,0 +1,98 @@
+-----------------REGISTRAZIONE UTENTE----------------
+{
+	"email" : "user@test.com",
+	"username" : "testuser",
+	"password" : "password"
+}
+-----------------------------------------------------
+
+--------------------ARCHIVI UTENTI-------------------
+{
+	"owner" : "testuser",
+	"filename" : "abc",
+	"counter" : 3,
+	"deleted" : false,
+	"content" : [
+					{
+						"user" : "testuser",  (ora è RIDONDANTE, possiamo toglierlo?)
+						"point": {
+									"type": "Point",
+									"coordinates": [
+													47.36,
+													57
+													]
+								  },
+						"timestamp": 1527196031000
+					},
+					{
+						"user" : "testuser",
+						"point": {
+									"type": "Point",
+									"coordinates": [
+													48.36,
+													57
+													]
+								 },
+						"timestamp": 1527196041000
+					}
+				]
+}
+-----------------------------------------------------
+
+---------DOWNLOAD o REMOVE di ARCHIVI UTENTE---------
+[ "filename1", "filename2"]
+-----------------------------------------------------
+
+-------------------RICERCA POSIZIONI-----------------
+{
+	"byTimestamp" : [
+						{
+							"timestamp" : 1527196031000,
+							"user" : "testuser"
+						},
+						{
+							"timestamp" : 1527196041000,
+							"user" : "testuser"
+						}
+					],
+	"byPosition" : [
+						{
+							"point": {
+										"type": "Point",
+										"coordinates": [
+														47.36,
+														57
+													   ]
+									 },
+							"user" : "testuser"
+						},
+						{
+							"point": {
+										"type": "Point",
+										"coordinates": [
+														48.36,
+														57
+													   ]
+									 },
+							"user" : "testuser"
+						}
+					],
+	"byUser" : [
+					{
+						"color" : "#FF0000",
+						"user" : "testuser"
+					},
+					{
+						"color" : "#FFFFFF",
+						"user" : "testuser"
+					}
+				]
+}
+-----------------------------------------------------
+
+------------------AQUISTO POSIZIONI------------------
+{
+	"filename" : "abc",
+	"purchased" : true
+}
+-----------------------------------------------------
