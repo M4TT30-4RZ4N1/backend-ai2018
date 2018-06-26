@@ -13,6 +13,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class ProjectApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ProjectApplication.class, args);
 	}
-
+    @Profile({ "dev" })
     @Bean
     public CommandLineRunner initDB(){
         return args -> {

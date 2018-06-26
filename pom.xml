@@ -97,6 +97,10 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-cloudfoundry-connector</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.orange.clara.cloud.boot.ssl-truststore-gen</groupId>
+			<artifactId>spring-boot-ssl-truststore-gen</artifactId>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.wololo/jts2geojson -->
 		<dependency>
 			<groupId>org.wololo</groupId>
