@@ -72,4 +72,14 @@ public class UserArchive {
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
+
+    @Override
+    public String toString() {
+        return "UserArchive{" +
+                ", owner='" + owner + '\'' +
+                ", filename='" + filename + '\'' +
+                ", counter=" + counter +
+                ", deleted=" + deleted +
+                '}';
+    }
 }

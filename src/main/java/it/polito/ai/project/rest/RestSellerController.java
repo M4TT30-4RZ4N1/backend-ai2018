@@ -12,6 +12,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -27,14 +29,18 @@ public class RestSellerController {
     public @ResponseBody
     List<UserArchive> getOwnArchives() {
         String user = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userArchiveService.getOwnArchives(user);
+        List<UserArchive> archives = userArchiveService.getOwnArchives(user);
+        //rimuove il contenuto del file nella risposta poichè non necessario
+        archives.forEach(a -> a.setContent(null));
+        return archives;
     }
     @RequestMapping(value="/archives/purchased", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
     List<String> getPurchasedArchives() {
         String user = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userArchiveService.getPurchasedArchives(user);
+        //rimuove il contenuto del file nella risposta poichè non necessario
+        return  userArchiveService.getPurchasedArchives(user);
     }
     @RequestMapping(value = "/positions", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
@@ -50,15 +56,17 @@ public class RestSellerController {
     @RequestMapping(value="/archives/download", method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
-    FileSystemResource downloadArchives(@RequestBody List<String> filenames) {
+    void downloadArchives(@RequestBody List<String> filenames, HttpServletResponse response) {
         String user = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        FileSystemResource zip = null;
+        ByteArrayOutputStream zip = null;
         try {
-            zip = userArchiveService.createZip(user, filenames);
+            userArchiveService.createZip(user, filenames, response.getOutputStream());
+            response.flushBuffer();
         } catch (IOException e) {
+            e.printStackTrace();
             throw new AccessDeniedException("Server Error");
         }
-        return zip;
+        return;
     }
 
     @RequestMapping(value="/archives/delete", method = RequestMethod.DELETE)
