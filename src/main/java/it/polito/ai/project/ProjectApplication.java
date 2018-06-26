@@ -19,6 +19,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @SpringBootApplication
 public class ProjectApplication {
@@ -54,13 +55,11 @@ public class ProjectApplication {
             //positionRepository.save(new TimedPosition(57.00, 47.00, new Date().getTime(), "testuser"));
             userArchiveRepository.deleteAll();
             userRepository.findAll().stream().filter(user -> user.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER"))).forEach(user -> {
-                int j = 0;
                 ArrayList<TimedPosition> timedpostition=new ArrayList<TimedPosition>();
                 for (int i = 0; i < 20; i++) {
                     timedpostition.add(new TimedPosition(45.00 + Math.random()/10, 45.00, new Date().getTime()));
                 }
-                userArchiveRepository.save(new UserArchive(user.getUsername(), user.getUsername()+"_file"+j, timedpostition));
-                j++;
+                userArchiveRepository.save(new UserArchive(user.getUsername(), user.getUsername()+"_file"+UUID.randomUUID(), timedpostition));
             });
 
 

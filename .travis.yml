@@ -3,7 +3,7 @@ jdk: oraclejdk8
 before_install:
   - chmod +x mvnw
 script:
-  - mvn package -Dmaven.test.skip=true
+  - mvn package
 deploy:
   provider: cloudfoundry
   api: https://api.eu-de.bluemix.net
