@@ -1,5 +1,8 @@
 package it.polito.ai.project.security;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -7,10 +10,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
+@Document
 public class User implements UserDetails {
     private  Collection<GrantedAuthority> authorities;
     private  String password;
+    @Indexed(unique = true)
     private  String username;
     private  String email;
     private  boolean accountNonExpired;
@@ -29,7 +33,16 @@ public class User implements UserDetails {
         this.enabled = enabled;
 
     }
-
+    public  User(String email, String username, String plainpassword, Collection<GrantedAuthority> grantedAuthorities){
+        this.email = email;
+        this.username=username;
+        this.password= new BCryptPasswordEncoder(4).encode(plainpassword);
+        this.accountNonExpired=true;
+        this.accountNonLocked=true;
+        this.credentialsNonExpired=true;
+        this.enabled=true;
+        this.authorities= grantedAuthorities;
+    }
     public  User(String email, String username, String plainpassword, String role){
         this.email = email;
         this.username=username;

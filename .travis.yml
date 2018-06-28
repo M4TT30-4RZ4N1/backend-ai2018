@@ -5,7 +5,7 @@ env:
 before_install:
   - chmod +x mvnw
 script:
-  - mvn package
+  - mvn package -P cloud
 deploy:
   provider: cloudfoundry
   api: https://api.eu-de.bluemix.net
