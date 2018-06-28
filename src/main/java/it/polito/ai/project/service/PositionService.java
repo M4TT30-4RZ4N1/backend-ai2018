@@ -75,16 +75,24 @@ public class PositionService {
         res.addAll(positionRepositoryImpl.getPositionInIntervalInPolygon(polygon, after.getTime(), before.getTime()));
         return res;
     }
+
+    @PreAuthorize("hasRole( 'CUSTOMER' )")
+    public List<TimedPosition> getPositionInIntervalInPolygonInUserList(Polygon polygon, Date after, Date before, List<String> users){
+        List<TimedPosition> res = new ArrayList<>();
+        res.addAll(positionRepositoryImpl.getApproximatePositionInIntervalInPolygonInUserList(polygon, after.getTime(), before.getTime(),users));
+        return res;
+    }
+
     @PreAuthorize("hasRole( 'CUSTOMER' )")
     public SearchResult getApproximatePositionInIntervalInPolygonInUserList(Polygon polygon, Date after, Date before, List<String> users){
         List<TimedPosition> res = new ArrayList<>();
         res.addAll(positionRepositoryImpl.getApproximatePositionInIntervalInPolygonInUserList(polygon, after.getTime(), before.getTime(),users));
         SearchResult searchResult=new SearchResult();
-        searchResult.byTimestamp=res.stream().map(timedPosition -> new TimestampResult(timedPosition.user,Math.round(timedPosition.timestamp/60)*60)).distinct().collect(Collectors.toList());
+        searchResult.byTimestamp=res.stream().map(timedPosition -> new TimestampResult(timedPosition.user,Math.round(timedPosition.timestamp/60)*60)).distinct().sorted().collect(Collectors.toList());
         searchResult.byPosition=res.stream().map(timedPosition ->{timedPosition.trimPrecsion(); return new PositionResult(timedPosition.user, timedPosition.point);}).distinct().collect(Collectors.toList());
-        searchResult.byUser=res.stream().map(timedPosition -> new UserResult(timedPosition.user,"blue")).distinct().collect(Collectors.toList());
+        searchResult.byUser=res.stream().map(timedPosition -> new UserResult(timedPosition.user,"blue")).distinct().sorted().collect(Collectors.toList());
         Collections.shuffle(searchResult.byPosition);
-        Collections.shuffle(searchResult.byTimestamp);
+        //Collections.shuffle(searchResult.byTimestamp);
         return searchResult;
     }
     @PreAuthorize("hasRole( 'ADMIN' )")

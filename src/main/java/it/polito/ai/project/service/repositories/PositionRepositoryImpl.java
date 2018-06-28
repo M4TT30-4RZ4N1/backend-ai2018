@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Repository
 @RestResource(exported = false)
 public class PositionRepositoryImpl{
-    
+
     @Autowired
     MongoTemplate mongoTemplate;
 
@@ -100,7 +100,7 @@ public class PositionRepositoryImpl{
                 new org.springframework.data.geo.Polygon(springPoints);
         BasicDBObject timestampQuery = new BasicDBObject();
         timestampQuery.put("timestamp", new BasicDBObject("$gt", after).append("$lt", before));
-        BasicDBObject geometryQuery =  new BasicDBObject("point", new BasicDBObject ("$geoWithin", new BasicDBObject("$polygon", convert(polygon))));
+        BasicDBObject geometryQuery =  new BasicDBObject("point", new BasicDBObject ("$geoWithin", new BasicDBObject("$geoFilter", convert(polygon))));
         List<BasicDBObject> andQuery = new ArrayList<>();
         andQuery.add(geometryQuery);
         andQuery.add(timestampQuery);
@@ -126,14 +126,15 @@ public class PositionRepositoryImpl{
                 new org.springframework.data.geo.Polygon(springPoints);
         Query query = new Query();
         query.addCriteria(Criteria.where("content").elemMatch(
-                    Criteria.where("timestamp").gt(before).lt(after)
-                            .and("point").within(polygon)));
-        query.addCriteria(Criteria.where("owner").in(user));
+                Criteria.where("timestamp").gt(before).lt(after)
+                        .and("point").within(polygon)));
+        if(user.size() > 0)
+            query.addCriteria(Criteria.where("owner").in(user));
         result= mongoTemplate.find(query,UserArchive.class)
                 .stream().map(userArchive -> {
-            userArchive.getContent().forEach(timedPosition -> timedPosition.user=userArchive.getOwner());
-            return  userArchive.getContent();
-        }).flatMap(List::stream).collect(Collectors.toList());
+                    userArchive.getContent().forEach(timedPosition -> timedPosition.user=userArchive.getOwner());
+                    return  userArchive.getContent();
+                }).flatMap(List::stream).collect(Collectors.toList());
         System.out.println(result);
         return result;
     }
