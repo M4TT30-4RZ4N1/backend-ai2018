@@ -88,7 +88,12 @@ public class PositionService {
         List<TimedPosition> res = new ArrayList<>();
         res.addAll(positionRepositoryImpl.getApproximatePositionInIntervalInPolygonInUserList(polygon, after.getTime(), before.getTime(),users));
         SearchResult searchResult=new SearchResult();
-        searchResult.byTimestamp=res.stream().map(timedPosition -> new TimestampResult(timedPosition.user,Math.round(timedPosition.timestamp/60)*60)).distinct().sorted().collect(Collectors.toList());
+        searchResult.byTimestamp=res.stream().map(timedPosition -> new TimestampResult(timedPosition.user,Math.round(timedPosition.timestamp/60)*60)).distinct()
+                                    .sorted((r1, r2) -> {
+                                        if(r1.getTimestamp() > r2.getTimestamp()) return 1;
+                                        if(r1.getTimestamp() < r2.getTimestamp()) return -1;
+                                        return 0;
+                                    }).collect(Collectors.toList());
         searchResult.byPosition=res.stream().map(timedPosition ->{timedPosition.trimPrecsion(); return new PositionResult(timedPosition.user, timedPosition.point);}).distinct().collect(Collectors.toList());
         searchResult.byUser=res.stream().map(timedPosition -> new UserResult(timedPosition.user,"blue")).distinct().sorted().collect(Collectors.toList());
         Collections.shuffle(searchResult.byPosition);
