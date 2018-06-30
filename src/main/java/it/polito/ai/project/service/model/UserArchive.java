@@ -1,6 +1,7 @@
 package it.polito.ai.project.service.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
@@ -13,8 +14,9 @@ public class UserArchive {
 
 
     private String owner;
-    public String filename;
-    public int counter;
+    @Indexed(unique = true)
+    private String filename;
+    private int counter;
     private boolean deleted;
     private List<TimedPosition> content;
 

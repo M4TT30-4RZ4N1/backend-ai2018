@@ -12,4 +12,6 @@ import java.util.List;
 public interface CustomerTransactionRepository extends MongoRepository<CustomerTransaction, String> {
 
     List<CustomerTransaction> findByCustomerId(String customer);
+    List<CustomerTransaction> findByCustomerIdAndFilename(String customer,String filename);
+
 }

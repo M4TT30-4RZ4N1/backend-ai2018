@@ -37,7 +37,11 @@ public class RestRegistrationController {
             userDetailsService.loadUserByUsername(details.getUsername());
             throw new RuntimeException("Utente già presente");
         }catch(UsernameNotFoundException e){
-            userDetailsService.addUser(details.getEmail(), details.getUsername(), details.getPassword());
+            try {
+                userDetailsService.addUser(details.getEmail(), details.getUsername(), details.getPassword());
+            }catch(Throwable e2){
+                throw new RuntimeException("Errore nell'inserimento dell'utente");
+            }
             return;
         }
     }

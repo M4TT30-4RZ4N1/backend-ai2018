@@ -28,11 +28,13 @@ public class OAuth2ResourceServerConfigJwt extends ResourceServerConfigurerAdapt
                     .and()
                     .authorizeRequests().antMatchers("/admin/**").hasRole("ADMIN")
                     .and()
-                    .authorizeRequests().antMatchers("/customers/**").hasRole("CUSTOMER")
+                    .authorizeRequests().antMatchers("/customer/**").hasRole("CUSTOMER")
                     .and()
-                    .authorizeRequests().antMatchers("/users/**").hasRole("USER")
+                    .authorizeRequests().antMatchers("/user/**").hasRole("USER")
+                    .and()
+                        .authorizeRequests().antMatchers("/swagger-ui.html","/webjars/springfox-swagger-ui/**","/swagger-resources/**", "/v2/**").permitAll()
                         .and()
-                        .authorizeRequests().anyRequest().permitAll();
+                    .authorizeRequests().anyRequest().denyAll();
     }
 
     @Override

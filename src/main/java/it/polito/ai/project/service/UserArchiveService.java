@@ -13,7 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,72 +65,99 @@ public class UserArchiveService {
         return content;
     }
 
-    public List<UserArchive> getOwnArchives(String user) {
-        List<UserArchive> res = new ArrayList<>();
-        res.addAll(archiveRepository.findByOwnerAndDeletedIsFalse(user));
+    public List<UserArchive> getOwnArchivesWithoutContent(String user) {
+        List<UserArchive> res = new ArrayList<>(archiveRepository.findByOwnerAndDeletedIsFalseAndExcludeContentAndExcludeId(user));
         //controllare se l'interfaccia spring fa il suo dovere, altrimenti creare un implementazione come per le posizioni
         System.out.println("Archivi caricati: " + res);
         return res;
     }
-
-    public List<String> getPurchasedArchives(String user) {
-        List<CustomerTransaction> tmp = new ArrayList<>();
-        tmp.addAll(transactionRepository.findByCustomerId(user));
-        List<String> res = tmp.stream().map(t -> t.getFilename()).distinct().collect(Collectors.toList());
+    public List<UserArchive> getOwnArchives(String user) {
+        List<UserArchive> res = new ArrayList<>(archiveRepository.findByOwnerAndDeletedIsFalse(user));
+        //controllare se l'interfaccia spring fa il suo dovere, altrimenti creare un implementazione come per le posizioni
+        System.out.println("Archivi caricati: " + res);
+        return res;
+    }
+    public List<UserArchive> getPurchasedArchives(String user) {
+        List<CustomerTransaction> tmp = new ArrayList<>(transactionRepository.findByCustomerId(user));
+        List<UserArchive> res = tmp.stream().map(customerTransaction -> archiveRepository.findByFilenameAndExcludeContentAndExcludeIdAndExcludeCounterAndExcludeDelete(customerTransaction.getFilename()))
+                .collect(Collectors.toList());
         //controllare se l'interfaccia spring fa il suo dovere, altrimenti creare un implementazione come per le posizioni
         System.out.println("Archivi acquistati: " + res);
         return res;
     }
 
-    public List<UserArchive> findArchiveByFilename(String filename) {
-        List<UserArchive> res = new ArrayList<>();
-        res.addAll(archiveRepository.findByFilename(filename));
+    public UserArchive findArchiveByFilename(String filename) {
+        UserArchive res=archiveRepository.findByFilename(filename);
         //controllare se l'interfaccia spring fa il suo dovere, altrimenti creare un implementazione come per le posizioni
-        System.out.println("Archivi acquistati: " + res);
+        System.out.println("Archivo acquistati: " + res);
         return res;
     }
 
     public void createZip(String user, List<String> filenames, ServletOutputStream outputStream) throws IOException {
         // controllo che i file che l'utente vuole scaricare, facciano effettivamente parte della sua collezione
-        List<String> archiveCollection = getOwnArchives(user).stream().map(a -> a.getFilename()).collect(Collectors.toList());
-        archiveCollection.addAll(getPurchasedArchives(user));
+        List<String> archiveCollection = getOwnArchives(user).stream().map(UserArchive::getFilename).collect(Collectors.toList());
+        archiveCollection.addAll(getPurchasedArchives(user).stream().map(UserArchive::getFilename).collect(Collectors.toList()));
         System.out.println("Elenco file da zippare: " + archiveCollection);
-        for(String f : filenames){
-            if(!archiveCollection.contains(f))
-                throw new AccessDeniedException("Invalid filename");
-        }
+        filenames.forEach( (f)->{
+                    if(!archiveCollection.contains(f))
+                        throw new AccessDeniedException("Invalid filename");
+                }
+        );
         // da qui in poi si può assumere che i file richiesti sono di proprietà e quindi l'operazione può continuare
 
         ObjectMapper mapper = new ObjectMapper();
         //ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
-        for(String f : filenames) {
-            for(UserArchive archive : findArchiveByFilename(f)){
-                String s = mapper.writeValueAsString(archive.getContent());
-                ZipEntry entry = new ZipEntry(f);
-                 /* use more Entries to add more files
-                 and use closeEntry() to close each file entry */
-                zipOutputStream.putNextEntry(entry);
-                zipOutputStream.write(s.getBytes());
-                zipOutputStream.closeEntry();
-            }
-        }
-        return;
+        filenames.stream().map(this::findArchiveByFilename).forEach(
+                archive->{
+                    try {
+                        String s = mapper.writeValueAsString(archive.getContent());
+                        ZipEntry entry = new ZipEntry(archive.getFilename());
+                     /* use more Entries to add more files
+                     and use closeEntry() to close each file entry */
+                        zipOutputStream.putNextEntry(entry);
+                        zipOutputStream.write(s.getBytes());
+                        zipOutputStream.closeEntry();
+                    }catch (IOException e){
+                        throw new RuntimeException("Unable to create the zip archive");
+                    }
+                }
+        );
     }
 
     public void deleteArchives(String user, List<String> filenames){
         // controllo che i file che l'utente vuole eliminare, siano suoi
-        List<String> archiveCollection = getOwnArchives(user).stream().map(a -> a.getFilename()).collect(Collectors.toList());
-        for(String f : filenames){
+        List<String> archiveCollection = getOwnArchivesWithoutContent(user).stream().map(UserArchive::getFilename).collect(Collectors.toList());
+        filenames.forEach( (f)->{
             if(!archiveCollection.contains(f))
                 throw new AccessDeniedException("Invalid filename");
-        }
-        // da qui in poi si può assumere che i file richiesti sono di proprietà e quindi l'operazione può continuare
-        for(String f : filenames) {
-            for(UserArchive archive : findArchiveByFilename(f)){
-                archive.setDeleted(true);
-                archiveRepository.save(archive);
             }
+        );
+        // da qui in poi si può assumere che i file richiesti sono di proprietà e quindi l'operazione può continuare
+        filenames.stream().map(this::findArchiveByFilename).forEach(
+                        archive->{
+                            archive.setDeleted(true);
+                            archiveRepository.save(archive);
+                        });
+    }
+    public void deleteArchive(String user, String f){
+        // controllo che i file che l'utente vuole eliminare, siano suoi
+        List<String> archiveCollection = getOwnArchivesWithoutContent(user).stream().map(UserArchive::getFilename).collect(Collectors.toList());
+        if(!archiveCollection.contains(f)){
+             throw new AccessDeniedException("Invalid filename");
         }
+        UserArchive archive=this.findArchiveByFilename(f);
+        archive.setDeleted(true);
+        archiveRepository.save(archive);
+    }
+
+    public List<TimedPosition> downloadArchive(String user, String filename) {
+        UserArchive archive=archiveRepository.findByFilename(filename);
+        if(archive.getOwner().equals(user)&&!archive.isDeleted()){
+            return archive.getContent();
+        }else if(transactionRepository.findByCustomerIdAndFilename(user,filename).size()>0){
+            return  archive.getContent();
+        }
+        throw new AccessDeniedException("You haven't buy this archive");
     }
 }

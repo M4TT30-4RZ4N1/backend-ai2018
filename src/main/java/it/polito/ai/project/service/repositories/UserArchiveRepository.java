@@ -2,6 +2,7 @@ package it.polito.ai.project.service.repositories;
 
 import it.polito.ai.project.service.model.UserArchive;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.stereotype.Repository;
 
@@ -11,6 +12,13 @@ import java.util.List;
 @RestResource(exported = false)
 public interface UserArchiveRepository extends MongoRepository<UserArchive, String> {
 
-    List<UserArchive> findByFilename(String filename);
-    List<UserArchive> findByOwnerAndDeletedIsFalse(String owner);
+    UserArchive findByFilename(String filename);
+
+    @Query(value="{'filename' : ?0}", fields="{content : 0,id : 0,deleted: 0, counter: 0}")
+    UserArchive findByFilenameAndExcludeContentAndExcludeIdAndExcludeCounterAndExcludeDelete(String filename);
+
+    @Query(value="{'owner' : ?0, 'deleted' : false}", fields="{content : 0,id : 0}")
+    List<UserArchive> findByOwnerAndDeletedIsFalseAndExcludeContentAndExcludeId(String owner);
+
+    List<UserArchive> findByOwnerAndDeletedIsFalse(String user);
 }
