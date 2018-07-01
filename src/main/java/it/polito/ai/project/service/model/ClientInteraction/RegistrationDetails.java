@@ -1,9 +1,9 @@
 package it.polito.ai.project.service.model.ClientInteraction;
 
 public class RegistrationDetails {
-    public String email;
-    public String username;
-    public String password;
+    private String email;
+    private String username;
+    private String password;
 
     public RegistrationDetails() {
     }

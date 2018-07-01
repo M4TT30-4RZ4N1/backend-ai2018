@@ -43,7 +43,7 @@ public class SwaggerConfig {
           .paths(PathSelectors.any())
           .build()
                 .securityContexts(Collections.singletonList(securityContext()))
-                .securitySchemes(new ArrayList<SecurityScheme>(Arrays.asList(oauth()))).apiInfo(apiInfo());
+                .securitySchemes(new ArrayList<SecurityScheme>(Collections.singletonList(oauth()))).apiInfo(apiInfo());
     }
     @Bean
     public SecurityScheme oauth() {
@@ -76,7 +76,7 @@ public class SwaggerConfig {
 
     private List<GrantType> grantTypes() {
         GrantType grantType = new ResourceOwnerPasswordCredentialsGrant(swaggerTokenURL);
-        return new ArrayList<GrantType>(Arrays.asList(grantType));
+        return new ArrayList<GrantType>(Collections.singletonList(grantType));
     }
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder().title("Backend API").description("")

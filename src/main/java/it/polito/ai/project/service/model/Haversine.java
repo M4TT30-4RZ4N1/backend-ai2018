@@ -18,7 +18,7 @@ public class Haversine {
         return EARTH_RADIUS * c; // <-- d
     }
 
-    public static double haversin(double val) {
+    private static double haversin(double val) {
         return Math.pow(Math.sin(val / 2), 2);
     }
 }

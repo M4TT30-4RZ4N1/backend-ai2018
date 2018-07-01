@@ -26,10 +26,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 public class RestSellerController {
+    private final UserArchiveService userArchiveService;
+
     @Autowired
-    private PositionService positionService;
-    @Autowired
-    private UserArchiveService userArchiveService;
+    public RestSellerController(UserArchiveService userArchiveService) {
+        this.userArchiveService = userArchiveService;
+    }
+
     @RequestMapping(value="/archives", method = RequestMethod.GET, params = {"ownership"}, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody

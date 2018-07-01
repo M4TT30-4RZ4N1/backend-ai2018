@@ -11,8 +11,13 @@ import java.util.List;
 
 @Component
 public class CustomerTransactionService {
-    @Autowired
+    private final
     CustomerTransactionRepository transactionRepository;
+
+    @Autowired
+    public CustomerTransactionService(CustomerTransactionRepository transactionRepository) {
+        this.transactionRepository = transactionRepository;
+    }
 
     @PreAuthorize("hasRole( 'CUSTOMER' )")
     public void addTransaction(CustomerTransaction t){
@@ -21,10 +26,6 @@ public class CustomerTransactionService {
 
     @PreAuthorize("hasRole( 'ADMIN' )")
     public List<CustomerTransaction> getTransactions(){
-        List<CustomerTransaction> res = new ArrayList<>();
-        for(CustomerTransaction t : transactionRepository.findAll()){
-            res.add(t);
-        }
-        return res;
+        return new ArrayList<>(transactionRepository.findAll());
     }
 }

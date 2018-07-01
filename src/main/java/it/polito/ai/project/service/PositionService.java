@@ -19,16 +19,15 @@ import java.util.stream.Collectors;
 
 @Component
 public class PositionService {
-    @Autowired
-    PositionRepository positionRepository;
-    @Autowired
-    PositionRepositoryImpl positionRepositoryImpl;
-    Validator validator;
-    TimedPosition first = null;
+    private final PositionRepository positionRepository;
+    private final PositionRepositoryImpl positionRepositoryImpl;
+    private Validator validator;
 
-    public PositionService(){
+    @Autowired
+    public PositionService(PositionRepositoryImpl positionRepositoryImpl, PositionRepository positionRepository){
         this.validator = new Validator();
-
+        this.positionRepositoryImpl = positionRepositoryImpl;
+        this.positionRepository = positionRepository;
     }
 
     @PreAuthorize("hasRole( 'USER' )")
@@ -40,7 +39,7 @@ public class PositionService {
 
         // associate user to the position
         p.setUser(user);
-        first = positionRepositoryImpl.findLastPositionImpl(user);
+        TimedPosition first = positionRepositoryImpl.findLastPositionImpl(user);
         if(first == null) {
             if(validator.validateFirst(p)) {
                 addPosition(p);
@@ -58,54 +57,36 @@ public class PositionService {
 
     @PreAuthorize("hasRole( 'USER' )")
     public List<TimedPosition> getPositions(String user){
-        List<TimedPosition> res = new ArrayList<>();
-        res.addAll(positionRepositoryImpl.findByUser(user));
-        return res;
+        return new ArrayList<>(positionRepositoryImpl.findByUser(user));
     }
 
     @PreAuthorize("hasRole( 'USER' )")
     public List<TimedPosition> getPositionInInterval(String user, Date after, Date before){
-        List<TimedPosition> res = new ArrayList<>();
-        res.addAll(positionRepositoryImpl.findByUserAndTimestampBetween(user, after.getTime(), before.getTime()));
-        return res;
+        return new ArrayList<>(positionRepositoryImpl.findByUserAndTimestampBetween(user, after.getTime(), before.getTime()));
     }
     @PreAuthorize("hasRole( 'CUSTOMER' )")
     public List<TimedPosition> getPositionInIntervalInPolygon(Polygon polygon, Date after, Date before){
-        List<TimedPosition> res = new ArrayList<>();
-        res.addAll(positionRepositoryImpl.getPositionInIntervalInPolygon(polygon, after.getTime(), before.getTime()));
-        return res;
+        return new ArrayList<>(positionRepositoryImpl.getPositionInIntervalInPolygon(polygon, after.getTime(), before.getTime()));
     }
 
     @PreAuthorize("hasRole( 'CUSTOMER' )")
     public List<TimedPosition> getPositionInIntervalInPolygonInUserList(Polygon polygon, Date after, Date before, List<String> users){
-        List<TimedPosition> res = new ArrayList<>();
-        res.addAll(positionRepositoryImpl.getApproximatePositionInIntervalInPolygonInUserList(polygon, after.getTime(), before.getTime(),users));
-        return res;
+        return new ArrayList<>(positionRepositoryImpl.getApproximatePositionInIntervalInPolygonInUserList(polygon, after.getTime(), before.getTime(), users));
     }
 
     @PreAuthorize("hasRole( 'CUSTOMER' )")
     public SearchResult getApproximatePositionInIntervalInPolygonInUserList(Polygon polygon, Date after, Date before, List<String> users){
-        List<TimedPosition> res = new ArrayList<>();
-        res.addAll(positionRepositoryImpl.getApproximatePositionInIntervalInPolygonInUserList(polygon, after.getTime(), before.getTime(),users));
+        List<TimedPosition> res = new ArrayList<>(positionRepositoryImpl.getApproximatePositionInIntervalInPolygonInUserList(polygon, after.getTime(), before.getTime(), users));
         SearchResult searchResult=new SearchResult();
         searchResult.byTimestamp=res.stream().map(timedPosition -> new TimestampResult(timedPosition.user,Math.round(timedPosition.timestamp/60)*60)).distinct()
-                                    .sorted((r1, r2) -> {
-                                        if(r1.getTimestamp() > r2.getTimestamp()) return 1;
-                                        if(r1.getTimestamp() < r2.getTimestamp()) return -1;
-                                        return 0;
-                                    }).collect(Collectors.toList());
+                                    .sorted(Comparator.comparingLong(TimestampResult::getTimestamp)).collect(Collectors.toList());
         searchResult.byPosition=res.stream().map(timedPosition ->{timedPosition.trimPrecsion(); return new PositionResult(timedPosition.user, timedPosition.point);}).distinct().collect(Collectors.toList());
-        searchResult.byUser=res.stream().map(timedPosition -> new UserResult(timedPosition.user,"blue")).distinct().sorted().collect(Collectors.toList());
+        searchResult.byUser=res.stream().map(timedPosition -> new UserResult(timedPosition.user)).distinct().sorted().collect(Collectors.toList());
         Collections.shuffle(searchResult.byPosition);
-        //Collections.shuffle(searchResult.byTimestamp);
         return searchResult;
     }
     @PreAuthorize("hasRole( 'ADMIN' )")
     public List<TimedPosition> getPositions(){
-        List<TimedPosition> res = new ArrayList<>();
-        for(TimedPosition p : positionRepository.findAll()){
-            res.add(p);
-        }
-        return res;
+        return new ArrayList<TimedPosition>(positionRepository.findAll());
     }
 }

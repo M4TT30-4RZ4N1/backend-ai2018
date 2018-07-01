@@ -23,15 +23,16 @@ import java.util.zip.ZipOutputStream;
 
 @Component
 public class UserArchiveService {
-    @Autowired
-    private UserArchiveRepository archiveRepository;
-    @Autowired
-    CustomerTransactionRepository transactionRepository;
+    private final UserArchiveRepository archiveRepository;
+    private final CustomerTransactionRepository transactionRepository;
     private Validator validator;
     private TimedPosition first = null;
 
-    public UserArchiveService() {
+    @Autowired
+    public UserArchiveService(UserArchiveRepository archiveRepository, CustomerTransactionRepository transactionRepository) {
         this.validator = new Validator();
+        this.archiveRepository = archiveRepository;
+        this.transactionRepository = transactionRepository;
     }
 
     @PreAuthorize("hasRole( 'USER' )")
@@ -71,7 +72,7 @@ public class UserArchiveService {
         System.out.println("Archivi caricati: " + res);
         return res;
     }
-    public List<UserArchive> getOwnArchives(String user) {
+    private List<UserArchive> getOwnArchives(String user) {
         List<UserArchive> res = new ArrayList<>(archiveRepository.findByOwnerAndDeletedIsFalse(user));
         //controllare se l'interfaccia spring fa il suo dovere, altrimenti creare un implementazione come per le posizioni
         System.out.println("Archivi caricati: " + res);
@@ -86,7 +87,7 @@ public class UserArchiveService {
         return res;
     }
 
-    public UserArchive findArchiveByFilename(String filename) {
+    private UserArchive findArchiveByFilename(String filename) {
         UserArchive res=archiveRepository.findByFilename(filename);
         //controllare se l'interfaccia spring fa il suo dovere, altrimenti creare un implementazione come per le posizioni
         System.out.println("Archivo acquistati: " + res);

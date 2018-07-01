@@ -23,11 +23,14 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
         /**
          *  Gestisce l'autenticazione con username e password ed è definito in WebSecurityConfig
          */
+    private final AuthenticationManager authenticationManager;
+    private final RepositoryUserDetailsService userDetailsService;
+
     @Autowired
-    @Qualifier("authenticationManagerBean")
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private RepositoryUserDetailsService userDetailsService;
+    public OAuth2AuthorizationServerConfig(@Qualifier("authenticationManagerBean") AuthenticationManager authenticationManager, RepositoryUserDetailsService userDetailsService) {
+        this.authenticationManager = authenticationManager;
+        this.userDetailsService = userDetailsService;
+    }
 
     /**
      * Definisce i permessi relativi all'accesso al token endpoint /oauth/token

@@ -5,8 +5,8 @@ import org.wololo.geojson.Polygon;
 import java.util.List;
 
 public class FilterQuery {
-    public Polygon geoFilter;
-    public List<String> usersFilter;
+    private Polygon geoFilter;
+    private List<String> usersFilter;
 
     public FilterQuery() {
     }

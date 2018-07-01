@@ -72,7 +72,7 @@ public class PositionServiceTest {
         Assert.assertTrue(res.getByTimestamp().contains(ts1));
         Assert.assertTrue(res.getByTimestamp().contains(ts2));
         Assert.assertEquals(1, res.getByUser().size());
-        Assert.assertTrue(res.getByUser().contains(new UserResult("user1","blue")));
+        Assert.assertTrue(res.getByUser().contains(new UserResult("user1")));
         Assert.assertEquals(2, res.getByPosition().size());
         double[] coord1={45.0,45.01};
         double[] coord2={45.0,45.02};

@@ -23,15 +23,24 @@ import java.util.UUID;
 
 @SpringBootApplication
 public class ProjectApplication {
-	@Autowired
+	private final
     PositionRepository positionRepository;
-    @Autowired
+    private final
     UserRepository userRepository;
-    @Autowired
+    private final
     CustomerTransactionRepository transactionRepository;
-    @Autowired
+    private final
     UserArchiveRepository userArchiveRepository;
-	public static void main(String[] args) {
+
+    @Autowired
+    public ProjectApplication(PositionRepository positionRepository, UserRepository userRepository, CustomerTransactionRepository transactionRepository, UserArchiveRepository userArchiveRepository) {
+        this.positionRepository = positionRepository;
+        this.userRepository = userRepository;
+        this.transactionRepository = transactionRepository;
+        this.userArchiveRepository = userArchiveRepository;
+    }
+
+    public static void main(String[] args) {
 		SpringApplication.run(ProjectApplication.class, args);
 	}
     @Profile({ "dev" })

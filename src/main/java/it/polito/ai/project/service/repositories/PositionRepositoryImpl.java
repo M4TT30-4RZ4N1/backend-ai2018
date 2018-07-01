@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 import org.wololo.geojson.Polygon;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,10 +26,15 @@ import java.util.stream.Collectors;
 @RestResource(exported = false)
 public class PositionRepositoryImpl{
 
-    @Autowired
+    private final
     MongoTemplate mongoTemplate;
 
-    public DBObject convert(org.springframework.data.geo.Polygon source) {
+    @Autowired
+    public PositionRepositoryImpl(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
+
+    private DBObject convert(org.springframework.data.geo.Polygon source) {
         BasicDBList list = new BasicDBList();
         for (Point point : source.getPoints())
         {
@@ -51,39 +57,29 @@ public class PositionRepositoryImpl{
                 mongoTemplate.find(qMaxTimestamp, TimedPosition.class);
 
         // calcolo max locale
-        TimedPosition timedPosition = l.stream()
-                .sorted((p1, p2) -> {
-                    if(p1.getTimestamp().getTime() > p2.getTimestamp().getTime())
-                        return 1;
-                    if(p1.getTimestamp().getTime() == p2.getTimestamp().getTime())
-                        return 0;
-                    else return -1;
-                })
-                .findFirst().orElse(null);
 
         //if(timedPosition != null)
         //System.out.println("max found: " + timedPosition.timestamp);
 
-        return timedPosition;
+        return l.stream().min(Comparator.comparingLong(p -> p.getTimestamp().getTime())).orElse(null);
     }
 
     public List<TimedPosition> findByUserAndTimestampBetween(String username, long after, long before){
-        if(mongoTemplate == null) throw new RuntimeException("Mongo DB not initialized");
-        List<TimedPosition> tmp = new ArrayList<>();
+        if(mongoTemplate == null) {
+            throw new RuntimeException("Mongo DB not initialized");
+        }
         Query query = new Query();
         query.addCriteria(Criteria.where("user").is(username).andOperator(Criteria.where("timestamp").gte(after).andOperator(Criteria.where("timestamp").lte(before))));
-        tmp = mongoTemplate.find(query, TimedPosition.class);
-        return tmp;
+        return mongoTemplate.find(query, TimedPosition.class);
     }
 
     public List<TimedPosition> findByUser(String username){
-        if(mongoTemplate == null) throw new RuntimeException("Mongo DB not initialized");
-
-        List<TimedPosition> tmp = new ArrayList<>();
+        if(mongoTemplate == null) {
+            throw new RuntimeException("Mongo DB not initialized");
+        }
         Query query = new Query();
         query.addCriteria(Criteria.where("user").is(username));
-        tmp = mongoTemplate.find(query, TimedPosition.class);
-        return tmp;
+        return mongoTemplate.find(query, TimedPosition.class);
     }
 
     public List<TimedPosition> getPositionInIntervalInPolygon(Polygon jsonpolygon, long after, long before){

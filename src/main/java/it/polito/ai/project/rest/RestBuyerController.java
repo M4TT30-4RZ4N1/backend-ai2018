@@ -26,10 +26,15 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/customer")
 public class RestBuyerController {
+    private final CustomerTransactionService transactionService;
+    private final PositionService positionService;
+
     @Autowired
-    private CustomerTransactionService transactionService;
-    @Autowired
-    private PositionService positionService;
+    public RestBuyerController(CustomerTransactionService transactionService, PositionService positionService) {
+        this.transactionService = transactionService;
+        this.positionService = positionService;
+    }
+
     @RequestMapping(value="/search", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody

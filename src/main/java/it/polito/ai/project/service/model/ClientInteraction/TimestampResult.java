@@ -3,8 +3,8 @@ package it.polito.ai.project.service.model.ClientInteraction;
 import java.util.Objects;
 
 public class TimestampResult {
-    public String user;
-    public long timestamp;
+    private String user;
+    private long timestamp;
 
     public TimestampResult() {
     }

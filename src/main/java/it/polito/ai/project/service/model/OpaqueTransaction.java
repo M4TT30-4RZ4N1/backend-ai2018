@@ -34,7 +34,7 @@ public class OpaqueTransaction {
     public OpaqueTransaction() {
 
     }
-    public static byte[] encrypt(byte[] bytesClear, String strKey) throws Exception{
+    private static byte[] encrypt(byte[] bytesClear, String strKey) throws Exception{
 
         try {
             SecretKeySpec skeyspec=new SecretKeySpec(strKey.getBytes(),"Blowfish");
@@ -48,7 +48,7 @@ public class OpaqueTransaction {
             throw new Exception(e);
         }
     }
-    public static byte[] decrypt(byte[] bytesEncrypted, String strKey) throws Exception{
+    private static byte[] decrypt(byte[] bytesEncrypted, String strKey) throws Exception{
         try {
             SecretKeySpec skeyspec=new SecretKeySpec(strKey.getBytes(),"Blowfish");
             Cipher cipher=Cipher.getInstance("Blowfish");

@@ -16,10 +16,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin")
 public class RestAdminController {
+    private final PositionService positionService;
+    private final CustomerTransactionService transactionService;
+
     @Autowired
-    private PositionService positionService;
-    @Autowired
-    private CustomerTransactionService transactionService;
+    public RestAdminController(PositionService positionService, CustomerTransactionService transactionService) {
+        this.positionService = positionService;
+        this.transactionService = transactionService;
+    }
+
     @RequestMapping(value = "/usersData", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody

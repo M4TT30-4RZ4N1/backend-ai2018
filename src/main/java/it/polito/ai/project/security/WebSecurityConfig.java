@@ -21,6 +21,11 @@ import org.springframework.web.filter.CorsFilter;
 @Order(SecurityProperties.BASIC_AUTH_ORDER)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    public WebSecurityConfig(RepositoryUserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
     /**
      * Le password sono cifrate con BCrypt (round 4)
      */
@@ -32,8 +37,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     /**
      * Repository degli utenti
      */
-    @Autowired
-    private RepositoryUserDetailsService userDetailsService;
+    private final RepositoryUserDetailsService userDetailsService;
 
     /**
      * Imposto il repository degli utenti e il tipo di encoding della password usato

@@ -14,8 +14,13 @@ public class RestRegistrationController {
     /**
      * Repository degli utenti
      */
+    private final RepositoryUserDetailsService userDetailsService;
+
     @Autowired
-    private RepositoryUserDetailsService userDetailsService;
+    public RestRegistrationController(RepositoryUserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
     @RequestMapping(value="/checkUser", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody

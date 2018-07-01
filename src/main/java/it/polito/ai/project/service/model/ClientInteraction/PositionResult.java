@@ -5,8 +5,8 @@ import org.wololo.geojson.Point;
 import java.util.Objects;
 
 public class PositionResult {
-    public String user;
-    public Point point;
+    private String user;
+    private Point point;
 
     public PositionResult() {
     }

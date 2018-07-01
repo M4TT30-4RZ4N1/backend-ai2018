@@ -5,19 +5,18 @@ import it.polito.ai.project.service.model.TimedPosition;
 
 public class Validator {
 
-    double lat_inf = -90.00;
-    double lat_sup = +90.00;
-    double long_inf = -180.00;
-    double long_sup = +180.00;
-    double max_v = 100.00;
+    private static final double lat_inf = -90.00;
+    private static final double lat_sup = +90.00;
+    private static final double long_inf = -180.00;
+    private static final double long_sup = +180.00;
+    private static final double max_v = 100.00;
 
     public Validator() {
     }
 
     // this method validate the first coordinate of the sequence (only data validity)
     public boolean validateFirst(TimedPosition t){
-        boolean flag = validateCoordinate(t);
-        return flag;
+        return validateCoordinate(t);
     }
 
     // this method validate two coordinates in sequence (data validity + sequence validity)
@@ -38,11 +37,7 @@ public class Validator {
             return false;
         }
         double time = diffTime/1000;
-        if(distance/time >= max_v){
-            return false;
-        }
-
-        return true;
+        return !(distance / time >= max_v);
     }
 
     private boolean validateCoordinate(TimedPosition t){
@@ -55,11 +50,7 @@ public class Validator {
         if(t.retriveLat()> lat_sup || t.retriveLat() < lat_inf){
             return false;
         }
-        if(t.retrieveLng()> long_sup || t.retrieveLng() < long_inf){
-            return false;
-        }
-
-        return true;
+        return !(t.retrieveLng() > long_sup) && !(t.retrieveLng() < long_inf);
     }
 
 

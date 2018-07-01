@@ -1,8 +1,8 @@
 package it.polito.ai.project.service.model.ClientInteraction;
 
 public class BuyArchive {
-    public String filename;
-    public boolean purchased;
+    private String filename;
+    private boolean purchased;
 
     public BuyArchive() {
     }
