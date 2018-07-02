@@ -8,6 +8,13 @@ public class CustomerTransaction {
     @Id
     private String customerId;
     private String userId;
+
+    public CustomerTransaction(String customerId, String userId, String filename) {
+        this.customerId = customerId;
+        this.userId = userId;
+        this.filename = filename;
+    }
+
     private String filename;
     private int nPositions;
     private double price;

@@ -1,5 +1,6 @@
 package it.polito.ai.project.service;
 
+import it.polito.ai.project.TimedPositionGenerator;
 import it.polito.ai.project.security.User;
 import it.polito.ai.project.security.UserRepository;
 import it.polito.ai.project.service.model.ClientInteraction.PositionResult;
@@ -8,8 +9,8 @@ import it.polito.ai.project.service.model.ClientInteraction.TimestampResult;
 import it.polito.ai.project.service.model.ClientInteraction.UserResult;
 import it.polito.ai.project.service.model.TimedPosition;
 import it.polito.ai.project.service.model.UserArchive;
-import it.polito.ai.project.service.repositories.CustomerTransactionRepository;
 import it.polito.ai.project.service.repositories.UserArchiveRepository;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,9 +22,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.wololo.geojson.Point;
 import org.wololo.geojson.Polygon;
 
-import javax.validation.constraints.AssertTrue;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @ActiveProfiles("test")
@@ -47,11 +48,7 @@ public class PositionServiceTest {
         userRepository.save(new User("user1","testpassword","ROLE_USER"));
         userRepository.save(new User("user2","testpassword","ROLE_USER"));
         userRepository.save(new User("user3","testpassword","ROLE_USER"));
-        ArrayList<TimedPosition> timedpostition=new ArrayList<TimedPosition>();
-        timedpostition.add(new TimedPosition(45.010, 45.00, new Date(0).getTime()));
-        timedpostition.add(new TimedPosition(45.020, 45.00, new Date(1).getTime()));
-        timedpostition.add(new TimedPosition(45.012, 45.00, new Date(5).getTime()));
-        timedpostition.add(new TimedPosition(45.014, 45.00, new Date(70).getTime()));
+        List<TimedPosition> timedpostition=TimedPositionGenerator.get();
         userArchiveRepository.save(new UserArchive("user1", "user1"+"_file"+UUID.randomUUID(), timedpostition));
         userArchiveRepository.save(new UserArchive("user2", "user2"+"_file"+UUID.randomUUID(), timedpostition));
 
@@ -78,7 +75,11 @@ public class PositionServiceTest {
         double[] coord2={45.0,45.02};
         Assert.assertTrue(res.getByPosition().contains(new PositionResult("user1",new Point(coord1))));
         Assert.assertTrue(res.getByPosition().contains(new PositionResult("user1",new Point(coord2))));
-
+    }
+    @After
+    public void multipleCleanup(){
+            userRepository.deleteAll();
+            userArchiveRepository.deleteAll();
     }
 
 }
