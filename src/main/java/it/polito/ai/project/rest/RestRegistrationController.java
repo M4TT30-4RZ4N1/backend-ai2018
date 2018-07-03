@@ -21,10 +21,10 @@ public class RestRegistrationController {
         this.userDetailsService = userDetailsService;
     }
 
-    @RequestMapping(value="/checkUser", method = RequestMethod.GET)
+    @RequestMapping(value="/checkUser/{username}", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
-    String usernameProbe(@Param("username") String username) {
+    String usernameProbe(@PathVariable("username") String username) {
         try{
             // lancia un'eccezione se l'utente non esiste
             userDetailsService.loadUserByUsername(username);
