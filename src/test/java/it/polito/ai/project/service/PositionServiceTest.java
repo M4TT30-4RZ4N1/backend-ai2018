@@ -48,7 +48,7 @@ public class PositionServiceTest {
         userRepository.save(new User("user1","testpassword","ROLE_USER"));
         userRepository.save(new User("user2","testpassword","ROLE_USER"));
         userRepository.save(new User("user3","testpassword","ROLE_USER"));
-        List<TimedPosition> timedpostition=TimedPositionGenerator.get();
+        List<TimedPosition> timedpostition=TimedPositionGenerator.get3();
         userArchiveRepository.save(new UserArchive("user1", "user1"+"_file"+UUID.randomUUID(), timedpostition));
         userArchiveRepository.save(new UserArchive("user2", "user2"+"_file"+UUID.randomUUID(), timedpostition));
 
@@ -70,11 +70,9 @@ public class PositionServiceTest {
         Assert.assertTrue(res.getByTimestamp().contains(ts2));
         Assert.assertEquals(1, res.getByUser().size());
         Assert.assertTrue(res.getByUser().contains(new UserResult("user1")));
-        Assert.assertEquals(2, res.getByPosition().size());
-        double[] coord1={45.0,45.01};
-        double[] coord2={45.0,45.02};
+        Assert.assertEquals(1, res.getByPosition().size());
+        double[] coord1={45.0,45.0};
         Assert.assertTrue(res.getByPosition().contains(new PositionResult("user1",new Point(coord1))));
-        Assert.assertTrue(res.getByPosition().contains(new PositionResult("user1",new Point(coord2))));
     }
     @After
     public void multipleCleanup(){
