@@ -3,6 +3,8 @@ package it.polito.ai.project.service.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Objects;
+
 @Document(collection="transactions")
 public class CustomerTransaction {
     @Id
@@ -74,5 +76,23 @@ public class CustomerTransaction {
                 ", nPositions=" + nPositions +
                 ", price=" + price +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CustomerTransaction that = (CustomerTransaction) o;
+        return nPositions == that.nPositions &&
+                Double.compare(that.price, price) == 0 &&
+                Objects.equals(customerId, that.customerId) &&
+                Objects.equals(userId, that.userId) &&
+                Objects.equals(filename, that.filename);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(customerId, userId, filename, nPositions, price);
     }
 }

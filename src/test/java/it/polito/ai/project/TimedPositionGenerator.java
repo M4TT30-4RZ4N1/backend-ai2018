@@ -10,9 +10,18 @@ public class TimedPositionGenerator {
     public static List<TimedPosition> get(){
         ArrayList<TimedPosition> timedpostition=new ArrayList<TimedPosition>();
         timedpostition.add(new TimedPosition(45.010, 45.00, new Date(0).getTime()));
-        timedpostition.add(new TimedPosition(45.020, 45.00, new Date(59).getTime()));
-        timedpostition.add(new TimedPosition(45.019, 45.00, new Date(99).getTime()));
-        timedpostition.add(new TimedPosition(45.018, 45.00, new Date(119).getTime()));
+        timedpostition.add(new TimedPosition(45.020, 45.00, new Date(5900).getTime()));
+        timedpostition.add(new TimedPosition(45.019, 45.00, new Date(9900).getTime()));
+        timedpostition.add(new TimedPosition(45.018, 45.00, new Date(11900).getTime()));
+        return timedpostition;
+    }
+
+    public static List<TimedPosition> get2(){
+        ArrayList<TimedPosition> timedpostition=new ArrayList<TimedPosition>();
+        timedpostition.add(new TimedPosition(45.010, 45.00, new Date(21900).getTime()));
+        timedpostition.add(new TimedPosition(45.020, 45.00, new Date(31900).getTime()));
+        timedpostition.add(new TimedPosition(45.019, 45.00, new Date(41900).getTime()));
+        timedpostition.add(new TimedPosition(45.018, 45.00, new Date(51900).getTime()));
         return timedpostition;
     }
 }

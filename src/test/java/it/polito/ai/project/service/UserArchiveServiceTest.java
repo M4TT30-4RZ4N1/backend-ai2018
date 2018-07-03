@@ -17,10 +17,15 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.servlet.ServletOutputStream;
 import javax.validation.constraints.AssertTrue;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import static org.junit.Assert.*;
 @ActiveProfiles("test")
@@ -86,14 +91,17 @@ public class UserArchiveServiceTest {
 
     @Test
     public void createZip() {
-
+        UserArchive archive1=new UserArchive("user1","testfile1",TimedPositionGenerator.get());
+        userArchiveService.addArchive(archive1);
+        UserArchive archive2=new UserArchive("user1","testfile2",TimedPositionGenerator.get2());
+        userArchiveService.addArchive(archive2);
     }
 
     @Test
     public void deleteArchives() {
         UserArchive archive1=new UserArchive("user1","testfile1",TimedPositionGenerator.get());
         userArchiveService.addArchive(archive1);
-        UserArchive archive2=new UserArchive("user1","testfile2",TimedPositionGenerator.get());
+        UserArchive archive2=new UserArchive("user1","testfile2",TimedPositionGenerator.get2());
         userArchiveService.addArchive(archive2);
         Assert.assertEquals(userArchiveRepository.findAll().size(),2);
         ArrayList<String> files=new ArrayList<String>();
@@ -107,7 +115,7 @@ public class UserArchiveServiceTest {
     public void deleteNotMyArchives() {
         UserArchive archive1=new UserArchive("user2","testfile1",TimedPositionGenerator.get());
         userArchiveService.addArchive(archive1);
-        UserArchive archive2=new UserArchive("user2","testfile2",TimedPositionGenerator.get());
+        UserArchive archive2=new UserArchive("user2","testfile2",TimedPositionGenerator.get2());
         userArchiveService.addArchive(archive2);
         Assert.assertEquals(userArchiveRepository.findAll().size(),2);
         ArrayList<String> files=new ArrayList<String>();
@@ -143,8 +151,26 @@ public class UserArchiveServiceTest {
         customerTransactionRepository.deleteAll();
         UserArchive archive=new UserArchive("user2","testfile",TimedPositionGenerator.get());
         userArchiveService.addArchive(archive);
-        customerTransactionService.addTransaction(new CustomerTransaction("user1","user2","testfile"));
+        CustomerTransaction testTransaction1 = new CustomerTransaction("user1","user2","testfile");
+        customerTransactionService.addTransaction(testTransaction1);
         List<TimedPosition> inserted=userArchiveService.downloadArchive("user1","testfile");
+        Assert.assertEquals(TimedPositionGenerator.get(),inserted);
+        CustomerTransaction transaction1 = customerTransactionRepository.findAll().get(0);
+        Assert.assertTrue(transaction1.equals(testTransaction1));
         customerTransactionRepository.deleteAll();
+    }
+
+    @Test
+    public void validatePositions(){
+        UserArchive archive=new UserArchive("user2","testfile",TimedPositionGenerator.get());
+        userArchiveService.addArchive(archive);
+        UserArchive archive2=new UserArchive("user2","testfile2",TimedPositionGenerator.get2());
+        userArchiveService.addArchive(archive2);
+        UserArchive archive3=new UserArchive("user2","testfile3",TimedPositionGenerator.get());
+        userArchiveService.addArchive(archive3);
+        List<UserArchive> userArchives = userArchiveRepository.findAll();
+        Assert.assertEquals(2, userArchives.size());
+        List<TimedPosition> contents = userArchives.stream().flatMap(a -> a.getContent().stream()).collect(Collectors.toList());
+        Assert.assertEquals(8, contents.size());
     }
 }
