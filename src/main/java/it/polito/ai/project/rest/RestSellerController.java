@@ -76,7 +76,7 @@ public class RestSellerController {
         try {
             userArchiveService.createZip(user, filenames, response.getOutputStream());
             response.flushBuffer();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new AccessDeniedException("Server Error");
         }

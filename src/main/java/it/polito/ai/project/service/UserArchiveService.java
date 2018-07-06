@@ -112,7 +112,7 @@ public class UserArchiveService {
         System.out.println("Elenco file da zippare: " + archiveCollection);
         filenames.forEach( (f)->{
                     if(!archiveCollection.contains(f))
-                        throw new AccessDeniedException("Invalid filename");
+                        throw new AccessDeniedException("Invalid operation, archive " + f + " not owned");
                 }
         );
         // da qui in poi si può assumere che i file richiesti sono di proprietà e quindi l'operazione può continuare
@@ -143,7 +143,7 @@ public class UserArchiveService {
         List<String> archiveCollection = getOwnArchivesWithoutContent(user).stream().map(UserArchive::getFilename).collect(Collectors.toList());
         filenames.forEach( (f)->{
             if(!archiveCollection.contains(f))
-                throw new AccessDeniedException("Invalid filename");
+                throw new AccessDeniedException("Invalid operation, archive " + f + " not owned");
             }
         );
         // da qui in poi si può assumere che i file richiesti sono di proprietà e quindi l'operazione può continuare
@@ -157,7 +157,7 @@ public class UserArchiveService {
         // controllo che i file che l'utente vuole eliminare, siano suoi
         List<String> archiveCollection = getOwnArchivesWithoutContent(user).stream().map(UserArchive::getFilename).collect(Collectors.toList());
         if(!archiveCollection.contains(f)){
-             throw new AccessDeniedException("Invalid filename");
+             throw new AccessDeniedException("Invalid operation, archive " + f + " not owned");
         }
         UserArchive archive=this.findArchiveByFilename(f);
         archive.setDeleted(true);
@@ -171,6 +171,6 @@ public class UserArchiveService {
         }else if(transactionRepository.findByCustomerIdAndFilename(user,filename).size()>0){
             return  archive.getContent();
         }
-        throw new AccessDeniedException("You haven't bought this archive");
+        throw new AccessDeniedException("Invalid operation, archive " + filename + " not owned");
     }
 }
