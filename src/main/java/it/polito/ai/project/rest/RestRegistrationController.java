@@ -29,7 +29,7 @@ public class RestRegistrationController {
         try{
             // lancia un'eccezione se l'utente non esiste
             userDetailsService.loadUserByUsername(username);
-            throw new DuplicateUserException();
+            throw new DuplicateUserException("User already Present");
         }catch(UsernameNotFoundException e){
             return username;
         }
@@ -41,7 +41,7 @@ public class RestRegistrationController {
         try{
             // ripete il controllo sull'esistenza dell'utente
             userDetailsService.loadUserByUsername(details.getUsername());
-            throw new DuplicateUserException();
+            throw new DuplicateUserException("User already Present");
         }catch(UsernameNotFoundException e){
             try {
                 userDetailsService.addUser(details.getEmail(), details.getUsername(), details.getPassword());
