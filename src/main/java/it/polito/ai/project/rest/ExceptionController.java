@@ -1,6 +1,7 @@
 package it.polito.ai.project.rest;
 
 import it.polito.ai.project.service.model.CustomException.DuplicateUserException;
+import it.polito.ai.project.service.model.CustomException.EmptyArchiveException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -20,6 +21,12 @@ public class ExceptionController {
     public ResponseEntity<?> handleForbidden(Exception ex) {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
+                .body(ex.getMessage());
+    }
+    @ExceptionHandler(EmptyArchiveException.class)
+    public ResponseEntity<?> handleEmptyArchive(Exception ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_GATEWAY)
                 .body(ex.getMessage());
     }
 }

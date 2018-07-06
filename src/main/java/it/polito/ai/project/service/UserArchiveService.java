@@ -1,6 +1,7 @@
 package it.polito.ai.project.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.polito.ai.project.service.model.CustomException.EmptyArchiveException;
 import it.polito.ai.project.service.model.CustomerTransaction;
 import it.polito.ai.project.service.model.TimedPosition;
 import it.polito.ai.project.service.model.UserArchive;
@@ -50,7 +51,7 @@ public class UserArchiveService {
     public void addArchive(String username, List<TimedPosition> rawContent){
         String filename = UUID.randomUUID().toString().replace("-", "");
         List<TimedPosition> content = validate(username, rawContent);
-        if(content.size() == 0) return;
+        if(content.size() == 0) throw new EmptyArchiveException("There were no valid position in the archive");
         UserArchive archive = new UserArchive(username, filename, 0, false, content);
         archiveRepository.insert(archive);
     }
