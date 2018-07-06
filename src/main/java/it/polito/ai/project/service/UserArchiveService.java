@@ -46,6 +46,7 @@ public class UserArchiveService {
         archiveRepository.insert(newArchive);
     }
 
+    @PreAuthorize("hasRole( 'USER' )")
     public void addArchive(String username, List<TimedPosition> rawContent){
         String filename = UUID.randomUUID().toString().replace("-", "");
         List<TimedPosition> content = validate(username, rawContent);
@@ -59,6 +60,8 @@ public class UserArchiveService {
         List<TimedPosition> content = new ArrayList<>();
         first = userArchiveRepositoryImpl.findLastPosition(username);
         rawContent.forEach(p -> {
+            if(p.getUser() != null && !p.getUser().equals(username))
+                throw new RuntimeException("The user specified in the positions differs from the session user");
             if(first == null){
                 if(validator.validateFirst(p)){
                     content.add(p);
