@@ -99,7 +99,7 @@ public class RestSellerController {
     public @ResponseBody
     ResponseEntity<?> createArchive(@RequestParam("file") MultipartFile file) {
         if(!file.getContentType().equals("application/json"))
-            return ResponseEntity.badRequest().body("File format not supported");
+            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body("File format not supported");
         try {
             String json = new String(file.getBytes());
             ObjectMapper objectMapper = new ObjectMapper();
@@ -112,7 +112,7 @@ public class RestSellerController {
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("Unexpected Error");
+            throw new RuntimeException(e.getMessage());
         }
 
     }

@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.nio.file.AccessDeniedException;
+
 @ControllerAdvice
 public class ExceptionController {
     @ExceptionHandler(DuplicateUserException.class)
@@ -13,5 +15,11 @@ public class ExceptionController {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body("User already present");
+    }
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<?> handleForbidden(Exception ex) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(ex.getMessage());
     }
 }
