@@ -27,12 +27,18 @@ import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
-
+/**
+ * This class is related to the RestSellerController, which includes the methods that are available to the seller.
+ */
 @RestController
 @RequestMapping("/user")
 public class RestSellerController {
     private final UserArchiveService userArchiveService;
 
+    /**
+     * This method allows to generate a RestSellerController.
+     * @param userArchiveService
+     */
     @Autowired
     public RestSellerController(UserArchiveService userArchiveService) {
         this.userArchiveService = userArchiveService;
@@ -74,11 +80,21 @@ public class RestSellerController {
         }
         return archives;
     }
+
+    /**
+     * This method allows to generate a new UserArchive.
+     * @param archive
+     */
     private Resource<UserArchive> createUserArchiveResoure(UserArchive archive){
         return new Resource<UserArchive>(archive,linkTo(methodOn(RestSellerController.class).downloadArchive(null, archive.getFilename())).withSelfRel());
     }
 
-
+    /**
+     * This method allows to download an archive.
+     * @param response
+     * @param filename
+     * @return the list of TimedPositions of the selected archive
+     */
     @RequestMapping(value="/archives/{filename}", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
@@ -101,6 +117,12 @@ public class RestSellerController {
         userArchiveService.addArchive(username, positions);
     }
 */
+
+    /**
+     * This method allows to generate a new UserArchive and to upload it.
+     * @param file
+     * @return the user archive
+     */
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "File created with metadata"),
             @ApiResponse(code = 401, message = "You are not authorized to create the resource"),
@@ -151,6 +173,12 @@ public class RestSellerController {
 
     }
     */
+
+    /**
+     * This method allows to download a list of zip archives.
+     * @param filenames
+     * @param response
+     */
     @RequestMapping(value="/zip/archives", method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
@@ -167,6 +195,11 @@ public class RestSellerController {
         }
     }
 
+    /**
+     * This method allows to download a zip archive.
+     * @param filename
+     * @param response
+     */
     @RequestMapping(value="/zip/archives/{filename}", method = RequestMethod.GET,produces="application/zip")
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
@@ -188,6 +221,10 @@ public class RestSellerController {
         }
     }
 
+    /**
+     * This method allows to delete a list of zip archives.
+     * @param filenames
+     */
     @RequestMapping(value="/archives", method = RequestMethod.DELETE)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
@@ -195,6 +232,11 @@ public class RestSellerController {
         String user = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         userArchiveService.deleteArchives(user, filenames);
     }
+
+    /**
+     * This method allows to delete a zip archive.
+     * @param filename
+     */
     @RequestMapping(value="/archives/{filename}", method = RequestMethod.DELETE)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody

@@ -23,18 +23,34 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * This class is related to the RestBuyerController, which includes the methods that are available to the buyer.
+ */
 @RestController
 @RequestMapping("/customer")
 public class RestBuyerController {
     private final CustomerTransactionService transactionService;
     private final PositionService positionService;
-
+    /**
+     * This method allows to generate a RestBuyerController.
+     * @param transactionService
+     * @param positionService
+     */
     @Autowired
     public RestBuyerController(CustomerTransactionService transactionService, PositionService positionService) {
         this.transactionService = transactionService;
         this.positionService = positionService;
     }
 
+    /**
+     * This method allows to retrieve all the positions belonging to a certain time interval and included in the specified polygon.
+     * @param session
+     * @param redirect
+     * @param filters
+     * @param after
+     * @param before
+     * @return  the list of positions detected
+     */
     @RequestMapping(value="/search", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
@@ -54,6 +70,14 @@ public class RestBuyerController {
         return polygonPositions;
     }
 
+    /**
+     * This method allows to confirm the transaction and to retrieve all the positions belonging to a certain time interval and included in the specified polygon.
+     * @param session
+     * @param filters
+     * @param after
+     * @param before
+     * @return  the list of positions detected
+     */
     @RequestMapping(value = "/buy", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.CREATED)
     public @ResponseBody
