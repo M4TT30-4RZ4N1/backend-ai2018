@@ -9,13 +9,15 @@ import it.polito.ai.project.service.repositories.CustomerTransactionRepository;
 import it.polito.ai.project.service.repositories.UserArchiveRepository;
 import it.polito.ai.project.service.repositories.UserArchiveRepositoryImpl;
 import it.polito.ai.project.service.validator.Validator;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,7 +44,7 @@ public class UserArchiveService {
     }
 
     @PreAuthorize("hasRole( 'USER' )")
-    public void addArchive(UserArchive archive){
+    void addArchive(UserArchive archive){
         List<TimedPosition> content = validate(archive.getOwner(), archive.getContent());
         if(content.size() == 0) return;
         UserArchive newArchive = new UserArchive(archive.getOwner(), archive.getFilename(), archive.getCounter(), archive.isDeleted(), content);
@@ -50,12 +52,13 @@ public class UserArchiveService {
     }
 
     @PreAuthorize("hasRole( 'USER' )")
-    public void addArchive(String username, List<TimedPosition> rawContent){
+    public UserArchive addArchive(String username, List<TimedPosition> rawContent){
         String filename = username+"_"+(new Date().getTime())+"_"+UUID.randomUUID().toString().replace("-", "")+".json";
         List<TimedPosition> content = validate(username, rawContent);
         if(content.size() == 0) throw new EmptyArchiveException("There were no valid position in the archive");
         UserArchive archive = new UserArchive(username, filename, 0, false, content);
         archiveRepository.insert(archive);
+        return archive;
     }
 
     private List<TimedPosition> validate(String username, List<TimedPosition> rawContent) {
@@ -79,9 +82,15 @@ public class UserArchiveService {
         });
         return content;
     }
-
     public List<UserArchive> getOwnArchivesWithoutContent(String user) {
         List<UserArchive> res = new ArrayList<>(archiveRepository.findByOwnerAndDeletedIsFalseAndExcludeContentAndExcludeId(user));
+        //controllare se l'interfaccia spring fa il suo dovere, altrimenti creare un implementazione come per le posizioni
+        System.out.println("Archivi caricati: " + res);
+        return res;
+    }
+    public List<UserArchive> getOwnArchivesWithoutContent(String user,int pagenumber,int size) {
+        Pageable page=PageRequest.of(pagenumber,size);
+        List<UserArchive> res = new ArrayList<>(archiveRepository.findByOwnerAndDeletedIsFalseAndExcludeContentAndExcludeId(user,page));
         //controllare se l'interfaccia spring fa il suo dovere, altrimenti creare un implementazione come per le posizioni
         System.out.println("Archivi caricati: " + res);
         return res;
@@ -100,7 +109,14 @@ public class UserArchiveService {
         System.out.println("Archivi acquistati: " + res);
         return res;
     }
-
+    public List<UserArchive> getPurchasedArchives(String user,int page,int size) {
+        List<CustomerTransaction> tmp = new ArrayList<>(transactionRepository.findByCustomerId(user,PageRequest.of(page,size)));
+        List<UserArchive> res = tmp.stream().map(customerTransaction -> archiveRepository.findByFilenameAndExcludeContentAndExcludeIdAndExcludeCounterAndExcludeDelete(customerTransaction.getFilename()))
+                .collect(Collectors.toList());
+        //controllare se l'interfaccia spring fa il suo dovere, altrimenti creare un implementazione come per le posizioni
+        System.out.println("Archivi acquistati: " + res);
+        return res;
+    }
     private UserArchive findArchiveByFilename(String filename) {
         UserArchive res=archiveRepository.findByFilename(filename);
         //controllare se l'interfaccia spring fa il suo dovere, altrimenti creare un implementazione come per le posizioni
@@ -171,8 +187,11 @@ public class UserArchiveService {
         archiveRepository.save(archive);
     }
 
-    public List<TimedPosition> downloadArchive(String user, String filename) {
+    public List<TimedPosition> downloadArchive(String user, String filename) throws NotFoundException {
         UserArchive archive=archiveRepository.findByFilename(filename);
+        if(archive==null){
+            throw new NotFoundException("Invalid operation, archive " + filename + " not owned");
+        }
         if(archive.getOwner().equals(user)&&!archive.isDeleted()){
             return archive.getContent();
         }else if(transactionRepository.findByCustomerIdAndFilename(user,filename).size()>0){

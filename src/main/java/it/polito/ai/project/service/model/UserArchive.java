@@ -1,23 +1,30 @@
 package it.polito.ai.project.service.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.hateoas.ResourceSupport;
 
 import java.util.List;
-
+@ApiModel(description = "Class representing a user archive")
 @Document(collection = "archives")
-public class UserArchive {
+public class UserArchive{
     @Id
     public String id;
 
 
-
+    @ApiModelProperty(notes = "Owner of Archive",example = "mickeymouse")
     private String owner;
+    @ApiModelProperty(notes = "Archive Filename",example = "mickeymouse-uiid.json")
     @Indexed(unique = true)
     private String filename;
+    @ApiModelProperty(notes = "Archive Purchase Counter",example = "2")
     private int counter;
+    @ApiModelProperty(notes = "Archive Status",example = "false",required = false)
     private boolean deleted;
+    @ApiModelProperty(notes = "List of TimedPosition")
     private List<TimedPosition> content;
 
     public UserArchive() {

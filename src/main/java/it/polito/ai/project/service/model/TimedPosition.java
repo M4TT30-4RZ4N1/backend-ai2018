@@ -1,12 +1,17 @@
 package it.polito.ai.project.service.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 import java.util.Objects;
+@ApiModel(description = "Class representing a Timed Position")
 @Document(collection = "positions")
 public class TimedPosition extends Position {
+    @ApiModelProperty(notes = "Timestamp of position",example = "15220012252",required = true)
     public long timestamp;
+    @ApiModelProperty(notes = "Owner of position",example = "mickeymouse",required = true)
     public String user;
     public TimedPosition(double lat, double lng, long timestamp) {
         super(lat, lng);

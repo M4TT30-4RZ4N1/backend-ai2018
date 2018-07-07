@@ -6,6 +6,7 @@ import it.polito.ai.project.service.model.TimedPosition;
 import it.polito.ai.project.service.model.UserArchive;
 import it.polito.ai.project.service.repositories.CustomerTransactionRepository;
 import it.polito.ai.project.service.repositories.UserArchiveRepository;
+import javassist.NotFoundException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -134,20 +135,20 @@ public class UserArchiveServiceTest {
     }
 
     @Test
-    public void downloadArchive() {
+    public void downloadArchive() throws NotFoundException {
         UserArchive archive=new UserArchive("user1","testfile",TimedPositionGenerator.get());
         userArchiveService.addArchive(archive);
         List<TimedPosition> inserted=userArchiveService.downloadArchive("user1","testfile");
         Assert.assertEquals(inserted,archive.getContent());
     }
     @Test(expected = AccessDeniedException.class)
-    public void downloadNotAuthArchive() {
+    public void downloadNotAuthArchive() throws NotFoundException {
         UserArchive archive=new UserArchive("user2","testfile",TimedPositionGenerator.get());
         userArchiveService.addArchive(archive);
         List<TimedPosition> inserted=userArchiveService.downloadArchive("user1","testfile");
     }
     @Test
-    public void downloadPurchasedArchive() {
+    public void downloadPurchasedArchive() throws NotFoundException {
         customerTransactionRepository.deleteAll();
         UserArchive archive=new UserArchive("user2","testfile",TimedPositionGenerator.get());
         userArchiveService.addArchive(archive);

@@ -1,5 +1,7 @@
 package it.polito.ai.project.service.model;
 
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.data.annotation.Id;
 
 import java.math.BigDecimal;
@@ -11,12 +13,13 @@ import org.wololo.geojson.Point;
 public class Position {
     @Id
     private String id;
+    @ApiModelProperty(notes = "Point (you must fill only coordinates with an array of 2 position)")
     @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
     public Point point;
 
-    public Position(){}
+    Position(){}
 
-    public Position(double lat, double lng) {
+    Position(double lat, double lng) {
         double array[] = {lng, lat};
         this.point = new Point(array);
     }

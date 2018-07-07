@@ -43,6 +43,7 @@ public class ProjectApplication {
     public static void main(String[] args) {
 		SpringApplication.run(ProjectApplication.class, args);
 	}
+
     @Profile({ "dev" })
     @Bean
     public CommandLineRunner initDB(){
@@ -68,6 +69,8 @@ public class ProjectApplication {
                 for (int i = 0; i < 20; i++) {
                     timedpostition.add(new TimedPosition(45.00 + Math.random()/10, 45.00, new Date().getTime()));
                 }
+                userArchiveRepository.save(new UserArchive(user.getUsername(), user.getUsername()+"_"+(new Date().getTime())+"_"+UUID.randomUUID().toString().replace("-", "")+".json", timedpostition));
+                userArchiveRepository.save(new UserArchive(user.getUsername(), user.getUsername()+"_"+(new Date().getTime())+"_"+UUID.randomUUID().toString().replace("-", "")+".json", timedpostition));
                 userArchiveRepository.save(new UserArchive(user.getUsername(), user.getUsername()+"_"+(new Date().getTime())+"_"+UUID.randomUUID().toString().replace("-", "")+".json", timedpostition));
             });
 

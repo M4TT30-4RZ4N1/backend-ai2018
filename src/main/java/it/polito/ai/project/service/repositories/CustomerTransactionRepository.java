@@ -1,6 +1,7 @@
 package it.polito.ai.project.service.repositories;
 
 import it.polito.ai.project.service.model.CustomerTransaction;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.stereotype.Repository;
@@ -12,6 +13,7 @@ import java.util.List;
 public interface CustomerTransactionRepository extends MongoRepository<CustomerTransaction, String> {
 
     List<CustomerTransaction> findByCustomerId(String customer);
+    List<CustomerTransaction> findByCustomerId(String customer, Pageable pageable);
     List<CustomerTransaction> findByCustomerIdAndFilename(String customer,String filename);
 
 }

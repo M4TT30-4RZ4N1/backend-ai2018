@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.OAuthBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -33,7 +34,10 @@ public class SwaggerConfig {
     private String swaggerClientSecret;
     private static final String swaggerTokenURL= "/oauth/token";
     private static final String SECURITY_SCHEMA_OAUTH2 = "oauth2";
-
+    @Bean(name = "multipartResolver")
+    public CommonsMultipartResolver commonsMultipartResolver(){
+        return new CommonsMultipartResolver();
+    }
 
     @Bean
     public Docket api() {
