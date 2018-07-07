@@ -9,7 +9,9 @@ import java.util.Objects;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.wololo.geojson.Point;
-
+/**
+ * This class is related to the Position.
+ */
 public class Position {
     @Id
     private String id;

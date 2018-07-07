@@ -6,6 +6,9 @@ import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceSupport;
 
 import java.util.List;
+/**
+ * This class is related to the list of user archives.
+ */
 @ApiModel(description = "Class representing a list of archives with HATEOAS Hyperlink.")
 public class UserArchives extends ResourceSupport {
     public List<Resource<UserArchive>> getArchives() {

@@ -9,7 +9,9 @@ import javax.crypto.spec.SecretKeySpec;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-
+/**
+ * This class allows to perform opaque transactions.
+ */
 public class OpaqueTransaction {
     public int getnPositions() {
         return nPositions;

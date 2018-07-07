@@ -4,13 +4,20 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Objects;
-
+/**
+ * This class is related to the CustomerTransaction.
+ */
 @Document(collection="transactions")
 public class CustomerTransaction {
     @Id
     private String customerId;
     private String userId;
-
+    /**
+     * This methods allows to set a new CustomerTransaction.
+     * @param customerId
+     * @param userId
+     * @param filename
+     */
     public CustomerTransaction(String customerId, String userId, String filename) {
         this.customerId = customerId;
         this.userId = userId;
@@ -22,7 +29,11 @@ public class CustomerTransaction {
     private double price;
 
     public  CustomerTransaction(){}
-
+    /**
+     * This methods allows to set a new CustomerTransaction.
+     * @param nPositions
+     * @param price
+     */
     public CustomerTransaction(int nPositions, double price) {
         this.nPositions = nPositions;
         this.price = price;
@@ -67,7 +78,9 @@ public class CustomerTransaction {
     public void setUserId(String userId) {
         this.userId = userId;
     }
-
+    /**
+     * This method allows to print the CustomerTransaction string.
+     */
     @Override
     public String toString() {
         return "CustomerTransaction{" +
@@ -77,7 +90,10 @@ public class CustomerTransaction {
                 ", price=" + price +
                 '}';
     }
-
+    /**
+     * This method allows to check if two elements UserResult are equal.
+     * @param o
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -90,9 +106,11 @@ public class CustomerTransaction {
                 Objects.equals(filename, that.filename);
     }
 
+    /**
+     * This methods allows to compute the hash function
+     */
     @Override
     public int hashCode() {
-
         return Objects.hash(customerId, userId, filename, nPositions, price);
     }
 }

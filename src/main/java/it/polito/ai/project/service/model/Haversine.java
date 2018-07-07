@@ -1,8 +1,16 @@
 package it.polito.ai.project.service.model;
-
+/**
+ * This class is related to the Haversine function.
+ */
 public class Haversine {
     private static final int EARTH_RADIUS = 6371; // Approx Earth radius in KM
-
+    /**
+     * This method allows to compute the distance using Haversine function.
+     * @param startLat
+     * @param startLong
+     * @param endLat
+     * @param endLong
+     */
     public static double distance(double startLat, double startLong,
                                   double endLat, double endLong) {
 

@@ -6,6 +6,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 import java.util.Objects;
+/**
+ * This class is related to the TimedPosition.
+ */
 @ApiModel(description = "Class representing a Timed Position")
 @Document(collection = "positions")
 public class TimedPosition extends Position {

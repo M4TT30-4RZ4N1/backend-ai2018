@@ -8,6 +8,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.hateoas.ResourceSupport;
 
 import java.util.List;
+/**
+ * This class is related to the user archive.
+ */
 @ApiModel(description = "Class representing a user archive")
 @Document(collection = "archives")
 public class UserArchive{
