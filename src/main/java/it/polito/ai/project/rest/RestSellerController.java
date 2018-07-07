@@ -106,7 +106,7 @@ public class RestSellerController {
             @ApiResponse(code = 401, message = "You are not authorized to create the resource"),
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
     })
-    @RequestMapping(value = "/archives", method = RequestMethod.POST,consumes = "multipart/form-data",produces = "application/json")
+    @RequestMapping(value = "/archives", method = RequestMethod.POST,produces = "application/json")
     @ResponseStatus(value = HttpStatus.CREATED)
     public @ResponseBody
     Resource<UserArchive> createArchiveByUpload(@ApiParam("File with list of timed postition")@RequestParam("file") MultipartFile file) {
