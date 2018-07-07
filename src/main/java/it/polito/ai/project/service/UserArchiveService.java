@@ -15,8 +15,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -49,7 +51,7 @@ public class UserArchiveService {
 
     @PreAuthorize("hasRole( 'USER' )")
     public void addArchive(String username, List<TimedPosition> rawContent){
-        String filename = UUID.randomUUID().toString().replace("-", "");
+        String filename = username+"_"+(new Date().getTime())+"_"+UUID.randomUUID().toString().replace("-", "")+".json";
         List<TimedPosition> content = validate(username, rawContent);
         if(content.size() == 0) throw new EmptyArchiveException("There were no valid position in the archive");
         UserArchive archive = new UserArchive(username, filename, 0, false, content);
@@ -62,7 +64,7 @@ public class UserArchiveService {
         first = userArchiveRepositoryImpl.findLastPosition(username);
         rawContent.forEach(p -> {
             if(p.getUser() != null && !p.getUser().equals(username))
-                throw new RuntimeException("The user specified in the positions differs from the session user");
+                throw new AccessDeniedException("The user specified in the positions differs from the session user");
             if(first == null){
                 if(validator.validateFirst(p)){
                     content.add(p);
@@ -110,7 +112,8 @@ public class UserArchiveService {
         // controllo che i file che l'utente vuole scaricare, facciano effettivamente parte della sua collezione
         List<String> archiveCollection = getOwnArchives(user).stream().map(UserArchive::getFilename).collect(Collectors.toList());
         archiveCollection.addAll(getPurchasedArchives(user).stream().map(UserArchive::getFilename).collect(Collectors.toList()));
-        System.out.println("Elenco file da zippare: " + archiveCollection);
+        System.out.println("Elenco file da zippare: " + filenames);
+        System.out.println("Elenco file posseduti: " + archiveCollection);
         filenames.forEach( (f)->{
                     if(!archiveCollection.contains(f))
                         throw new AccessDeniedException("Invalid operation, archive " + f + " not owned");
@@ -136,6 +139,9 @@ public class UserArchiveService {
                     }
                 }
         );
+        zipOutputStream.finish();
+        zipOutputStream.close();
+        outputStream.close();
         return zipOutputStream;
     }
 

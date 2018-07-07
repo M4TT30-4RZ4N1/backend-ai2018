@@ -2,18 +2,11 @@ package it.polito.ai.project.rest;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import it.polito.ai.project.service.PositionService;
 import it.polito.ai.project.service.UserArchiveService;
 import it.polito.ai.project.service.model.TimedPosition;
 import it.polito.ai.project.service.model.UserArchive;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.data.mongodb.repository.Query;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
@@ -23,17 +16,14 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.zip.ZipOutputStream;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
@@ -117,19 +107,51 @@ public class RestSellerController {
 
     }
 
-    @RequestMapping(value="/ziparchive", method = RequestMethod.POST)
+    @RequestMapping(value="/archives/zip", method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
     void downloadArchives(@RequestBody List<String> filenames, HttpServletResponse response) {
         String user = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        ByteArrayOutputStream zip = null;
         try {
             userArchiveService.createZip(user, filenames, response.getOutputStream());
+            response.setContentType("application/zip");
+            response.setHeader("Content-disposition", "attachment; filename=archive.zip");
             response.flushBuffer();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new AccessDeniedException("Server Error");
+            throw new RuntimeException("Server Error");
         }
+    }
+
+    @RequestMapping(value="/archives/zip/{filename}", method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+    public @ResponseBody
+    void downloadArchives(@ApiParam("The name of file that will be downloaded")@PathVariable("filename") String filename, HttpServletResponse response) {
+        String user = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<String> filenames = new ArrayList<>();
+        filenames.add(filename);
+        try {
+            userArchiveService.createZip(user, filenames, response.getOutputStream());
+            response.setContentType("application/zip");
+            response.setHeader("Content-disposition", "attachment; filename=archive.zip");
+            response.flushBuffer();
+        } catch (AccessDeniedException e) {
+            e.printStackTrace();
+            throw new AccessDeniedException(e.getMessage());
+        }catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Unexpected Error");
+        }
+        /*ByteArrayOutputStream zip = new ByteArrayOutputStream();
+        try {
+            ZipOutputStream zipFileContent = userArchiveService.createZip(user, filenames, zip);
+            response.setContentType("application/zip");
+            response.setHeader("Content-disposition", "attachment; filename=archive.zip");
+            return ResponseEntity.ok(zipFileContent);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new AccessDeniedException("Server Error");
+        }*/
     }
 
     @RequestMapping(value="/archives", method = RequestMethod.DELETE)
