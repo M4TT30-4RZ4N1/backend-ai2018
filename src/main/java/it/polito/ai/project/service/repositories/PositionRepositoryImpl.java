@@ -124,6 +124,7 @@ public class PositionRepositoryImpl{
         query.addCriteria(Criteria.where("content").elemMatch(
                 Criteria.where("timestamp").gt(before).lt(after)
                         .and("point").within(polygon)));
+        System.out.println("Query: after="+ after + " & before="+before+" & polygon="+polygon + " & users="+user);
         if(user.size() > 0)
             query.addCriteria(Criteria.where("owner").in(user));
         result= mongoTemplate.find(query,UserArchive.class)
@@ -131,7 +132,7 @@ public class PositionRepositoryImpl{
                     userArchive.getContent().forEach(timedPosition -> timedPosition.user=userArchive.getOwner());
                     return  userArchive.getContent();
                 }).flatMap(List::stream).collect(Collectors.toList());
-        System.out.println(result);
+        System.out.println("Search result: " + result);
         return result;
     }
 }

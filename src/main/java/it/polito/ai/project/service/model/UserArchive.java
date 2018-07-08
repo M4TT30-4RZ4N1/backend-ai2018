@@ -92,6 +92,7 @@ public class UserArchive{
                 ", filename='" + filename + '\'' +
                 ", counter=" + counter +
                 ", deleted=" + deleted +
+                ", content=" + content +
                 '}';
     }
 }

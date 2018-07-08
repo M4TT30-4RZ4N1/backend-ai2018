@@ -65,9 +65,10 @@ public class ProjectApplication {
             //positionRepository.save(new TimedPosition(57.00, 47.00, new Date().getTime(), "testuser"));
             userArchiveRepository.deleteAll();
             userRepository.findAll().stream().filter(user -> user.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER"))).forEach(user -> {
+                System.out.println("Adding test archive for "+ user.getUsername());
                 ArrayList<TimedPosition> timedpostition=new ArrayList<TimedPosition>();
                 for (int i = 0; i < 20; i++) {
-                    timedpostition.add(new TimedPosition(45.00 + Math.random()/10, 45.00, new Date().getTime()));
+                    timedpostition.add(new TimedPosition(45.00 + Math.random()/10000, 45.00, new Date().getTime()+i));
                 }
                 userArchiveRepository.save(new UserArchive(user.getUsername(), user.getUsername()+"_"+(new Date().getTime())+"_"+UUID.randomUUID().toString().replace("-", "")+".json", timedpostition));
                 userArchiveRepository.save(new UserArchive(user.getUsername(), user.getUsername()+"_"+(new Date().getTime())+"_"+UUID.randomUUID().toString().replace("-", "")+".json", timedpostition));
@@ -76,10 +77,10 @@ public class ProjectApplication {
 
 
             // fetch all customers
-            System.out.println("Positions found with findAll():");
+            System.out.println("Archive found with findAll():");
             System.out.println("-------------------------------");
-            for (TimedPosition position : positionRepository.findAll()) {
-                System.out.println(position);
+            for (UserArchive archive : userArchiveRepository.findAll()) {
+                System.out.println(archive);
             }
             System.out.println();
             System.out.println("Transactions found with findAll():");
