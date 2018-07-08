@@ -122,9 +122,11 @@ public class PositionRepositoryImpl{
                 new org.springframework.data.geo.Polygon(springPoints);
         Query query = new Query();
         query.addCriteria(Criteria.where("content").elemMatch(
-                Criteria.where("timestamp").gt(before).lt(after)
+                Criteria.where("timestamp").gt(after).lt(before)
                         .and("point").within(polygon)));
-        System.out.println("Query: after="+ after + " & before="+before+" & polygon="+polygon + " & users="+user);
+        /*query.addCriteria(Criteria.where("content.timestamp").gt(after).lt(before)
+                        .and("content.point").within(polygon));*/
+        //System.out.println("Query: after="+ after + " & before="+before+" & polygon="+polygon + " & users="+user);
         if(user.size() > 0)
             query.addCriteria(Criteria.where("owner").in(user));
         result= mongoTemplate.find(query,UserArchive.class)

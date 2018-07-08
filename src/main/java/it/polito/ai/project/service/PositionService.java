@@ -5,10 +5,13 @@ import it.polito.ai.project.service.model.ClientInteraction.SearchResult;
 import it.polito.ai.project.service.model.ClientInteraction.TimestampResult;
 import it.polito.ai.project.service.model.ClientInteraction.UserResult;
 import it.polito.ai.project.service.model.Position;
+import it.polito.ai.project.service.model.UserArchive;
 import it.polito.ai.project.service.repositories.PositionRepository;
 import it.polito.ai.project.service.model.TimedPosition;
 import it.polito.ai.project.service.repositories.PositionRepositoryImpl;
+import it.polito.ai.project.service.repositories.UserArchiveRepository;
 import it.polito.ai.project.service.validator.Validator;
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
@@ -21,13 +24,15 @@ import java.util.stream.Collectors;
 public class PositionService {
     private final PositionRepository positionRepository;
     private final PositionRepositoryImpl positionRepositoryImpl;
+    private final UserArchiveRepository userArchiveRepository;
     private Validator validator;
 
     @Autowired
-    public PositionService(PositionRepositoryImpl positionRepositoryImpl, PositionRepository positionRepository){
+    public PositionService(PositionRepositoryImpl positionRepositoryImpl, PositionRepository positionRepository, UserArchiveRepository userArchiveRepository){
         this.validator = new Validator();
         this.positionRepositoryImpl = positionRepositoryImpl;
         this.positionRepository = positionRepository;
+        this.userArchiveRepository = userArchiveRepository;
     }
 
     @PreAuthorize("hasRole( 'USER' )")
@@ -78,10 +83,11 @@ public class PositionService {
     public SearchResult getApproximatePositionInIntervalInPolygonInUserList(Polygon polygon, Date after, Date before, List<String> users){
         List<TimedPosition> res = new ArrayList<>(positionRepositoryImpl.getApproximatePositionInIntervalInPolygonInUserList(polygon, after.getTime(), before.getTime(), users));
         SearchResult searchResult=new SearchResult();
-        searchResult.byTimestamp=res.stream().map(timedPosition -> new TimestampResult(timedPosition.user,Math.round(timedPosition.timestamp/60)*60)).distinct()
+        searchResult.byTimestamp=res.stream().map(timedPosition ->new TimestampResult(timedPosition.user, DateUtils.setSeconds(new Date(timedPosition.timestamp*1000), 0).getTime())).distinct()
                                     .sorted(Comparator.comparingLong(TimestampResult::getTimestamp)).collect(Collectors.toList());
         searchResult.byPosition=res.stream().map(timedPosition ->{timedPosition.trimPrecsion(); return new PositionResult(timedPosition.user, timedPosition.point);}).distinct().collect(Collectors.toList());
-        searchResult.byUser=res.stream().map(timedPosition -> new UserResult(timedPosition.user)).distinct().sorted().collect(Collectors.toList());
+        searchResult.byUser=res.stream().map(timedPosition -> new UserResult(timedPosition.user)).distinct()
+                                    .sorted(Comparator.comparing(UserResult::getUser)).collect(Collectors.toList());
         Collections.shuffle(searchResult.byPosition);
         return searchResult;
     }

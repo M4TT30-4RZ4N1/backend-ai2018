@@ -56,7 +56,7 @@ public class PositionServiceTest {
 		users.add("user1");
 		users.add("user4");
 		double coordinates[][][]={{{0,0},{0,70},{70,70},{70,0},{0,0}}};
-		SearchResult res= positionService.getApproximatePositionInIntervalInPolygonInUserList(new Polygon(coordinates),new Date(),new Date(0),users);
+		SearchResult res= positionService.getApproximatePositionInIntervalInPolygonInUserList(new Polygon(coordinates),new Date(0),new Date(),users);
 		System.out.println("----------------Positions------------------");
 		res.getByPosition().forEach(positionResult -> System.out.println(positionResult.toString()));
 		System.out.println("----------------Timestamp------------------");

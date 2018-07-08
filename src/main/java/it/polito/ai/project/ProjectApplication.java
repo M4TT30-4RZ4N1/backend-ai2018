@@ -68,7 +68,7 @@ public class ProjectApplication {
                 System.out.println("Adding test archive for "+ user.getUsername());
                 ArrayList<TimedPosition> timedpostition=new ArrayList<TimedPosition>();
                 for (int i = 0; i < 20; i++) {
-                    timedpostition.add(new TimedPosition(45.00 + Math.random()/10000, 45.00, new Date().getTime()+i));
+                    timedpostition.add(new TimedPosition(45.00 + Math.random()/10, 45.00, new Date().getTime()+i));
                 }
                 userArchiveRepository.save(new UserArchive(user.getUsername(), user.getUsername()+"_"+(new Date().getTime())+"_"+UUID.randomUUID().toString().replace("-", "")+".json", timedpostition));
                 userArchiveRepository.save(new UserArchive(user.getUsername(), user.getUsername()+"_"+(new Date().getTime())+"_"+UUID.randomUUID().toString().replace("-", "")+".json", timedpostition));
