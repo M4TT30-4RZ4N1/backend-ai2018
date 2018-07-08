@@ -14,17 +14,9 @@ import java.util.Objects;
 public class TimedPosition extends Position {
     @ApiModelProperty(notes = "Timestamp of position",example = "15220012252",required = true)
     public long timestamp;
-    @ApiModelProperty(notes = "Owner of position",example = "mickeymouse",required = true)
-    public String user;
     public TimedPosition(double lat, double lng, long timestamp) {
         super(lat, lng);
         this.timestamp = timestamp;
-    }
-
-    public TimedPosition(double lat, double lng, long timestamp, String user) {
-        super(lat, lng);
-        this.timestamp = timestamp;
-        this.user = user;
     }
 
     public TimedPosition() {
@@ -34,13 +26,6 @@ public class TimedPosition extends Position {
         return new Date(timestamp);
     }
 
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user){
-        this.user = user;
-    }
 
     @Override
     public boolean equals(Object o) {

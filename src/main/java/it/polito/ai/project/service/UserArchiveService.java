@@ -74,8 +74,6 @@ public class UserArchiveService {
         List<TimedPosition> content = new ArrayList<>();
         first = userArchiveRepositoryImpl.findLastPosition(username);
         rawContent.forEach(p -> {
-            if(p.getUser() != null && !p.getUser().equals(username))
-                throw new AccessDeniedException("The user specified in the positions differs from the session user");
             if(first == null){
                 if(validator.validateFirst(p)){
                     content.add(p);
@@ -205,18 +203,26 @@ public class UserArchiveService {
         }
         throw new AccessDeniedException("Invalid operation, archive " + filename + " not owned");
     }
-    public List<TimedPosition> getPositionInIntervalInPolygonInUserList(Polygon polygon, Date after, Date before, List<String> users){
-        return new ArrayList<>(userArchiveRepositoryImpl.getPositionInIntervalInPolygonInUserList(polygon, after.getTime(), before.getTime(), users));
+    public List<UserArchive> getUserArchiveWithPositionInIntervalInPolygonInUserList(Polygon polygon, Date after, Date before, List<String> users){
+        return userArchiveRepositoryImpl.getPositionInIntervalInPolygonInUserList(polygon, after.getTime(), before.getTime(), users);
     }
 
     public SearchResult getApproximatePositionInIntervalInPolygonInUserList(Polygon polygon, Date after, Date before, List<String> users){
-        List<TimedPosition> res = new ArrayList<>(userArchiveRepositoryImpl.getPositionInIntervalInPolygonInUserList(polygon, after.getTime(), before.getTime(), users));
+        List<UserArchive> res = new ArrayList<>(userArchiveRepositoryImpl.getPositionInIntervalInPolygonInUserList(polygon, after.getTime(), before.getTime(), users));
         SearchResult searchResult=new SearchResult();
-        searchResult.byTimestamp=res.stream().map(timedPosition ->new TimestampResult(timedPosition.user, DateUtils.setSeconds(new Date(timedPosition.timestamp*1000), 0).getTime()/1000)).distinct()
-                .sorted(Comparator.comparingLong(TimestampResult::getTimestamp)).collect(Collectors.toList());
-        searchResult.byPosition=res.stream().map(timedPosition ->{timedPosition.trimPrecsion(); return new PositionResult(timedPosition.user, timedPosition.point);}).distinct().collect(Collectors.toList());
-        searchResult.byUser=res.stream().map(timedPosition -> new UserResult(timedPosition.user)).distinct()
-                .sorted(Comparator.comparing(UserResult::getUser)).collect(Collectors.toList());
+        res.forEach(userarchive->{
+            userarchive.getContent().forEach(
+                    content->{
+                        searchResult.byTimestamp.add(new TimestampResult(userarchive.getOwner(), DateUtils.setSeconds(new Date(content.timestamp*1000), 0).getTime()/1000));
+                        content.trimPrecsion();
+                        searchResult.byPosition.add(new PositionResult(userarchive.getOwner(), content.point));
+                        searchResult.byUser.add(new UserResult(userarchive.getOwner()));
+                    }
+            );
+        });
+        searchResult.byTimestamp=searchResult.byTimestamp.stream().distinct().sorted(Comparator.comparingLong(TimestampResult::getTimestamp)).collect(Collectors.toList());
+        searchResult.byPosition=searchResult.byPosition.stream().distinct().collect(Collectors.toList());
+        searchResult.byUser=searchResult.byUser.stream().distinct().sorted(Comparator.comparing(UserResult::getUser)).collect(Collectors.toList());
         Collections.shuffle(searchResult.byPosition);
         return searchResult;
     }

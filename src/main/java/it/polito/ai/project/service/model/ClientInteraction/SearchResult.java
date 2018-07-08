@@ -1,5 +1,8 @@
 package it.polito.ai.project.service.model.ClientInteraction;
 
+import javafx.geometry.Pos;
+
+import java.util.ArrayList;
 import java.util.List;
 /**
  * This class is related to SearchResult and the available operations.
@@ -10,6 +13,9 @@ public class SearchResult {
     public List<UserResult> byUser;
 
     public SearchResult() {
+        this.byPosition= new ArrayList<>();
+        this.byTimestamp= new ArrayList<>();
+        this.byUser= new ArrayList<>();
     }
     /**
      * This method allows to set the SearchResult info.
