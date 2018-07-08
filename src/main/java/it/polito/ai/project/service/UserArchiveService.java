@@ -1,6 +1,10 @@
 package it.polito.ai.project.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.polito.ai.project.service.model.ClientInteraction.PositionResult;
+import it.polito.ai.project.service.model.ClientInteraction.SearchResult;
+import it.polito.ai.project.service.model.ClientInteraction.TimestampResult;
+import it.polito.ai.project.service.model.ClientInteraction.UserResult;
 import it.polito.ai.project.service.model.CustomException.EmptyArchiveException;
 import it.polito.ai.project.service.model.CustomerTransaction;
 import it.polito.ai.project.service.model.TimedPosition;
@@ -10,19 +14,18 @@ import it.polito.ai.project.service.repositories.UserArchiveRepository;
 import it.polito.ai.project.service.repositories.UserArchiveRepositoryImpl;
 import it.polito.ai.project.service.validator.Validator;
 import javassist.NotFoundException;
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
+import org.wololo.geojson.Polygon;
 
 import javax.servlet.ServletOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -197,5 +200,23 @@ public class UserArchiveService {
             return  archive.getContent();
         }
         throw new AccessDeniedException("Invalid operation, archive " + filename + " not owned");
+    }
+    public List<TimedPosition> getPositionInIntervalInPolygonInUserList(Polygon polygon, Date after, Date before, List<String> users){
+        return new ArrayList<>(userArchiveRepositoryImpl.getPositionInIntervalInPolygonInUserList(polygon, after.getTime(), before.getTime(), users));
+    }
+
+    public SearchResult getApproximatePositionInIntervalInPolygonInUserList(Polygon polygon, Date after, Date before, List<String> users){
+        List<TimedPosition> res = new ArrayList<>(userArchiveRepositoryImpl.getPositionInIntervalInPolygonInUserList(polygon, after.getTime(), before.getTime(), users));
+        SearchResult searchResult=new SearchResult();
+        searchResult.byTimestamp=res.stream().map(timedPosition ->new TimestampResult(timedPosition.user, DateUtils.setSeconds(new Date(timedPosition.timestamp*1000), 0).getTime()/1000)).distinct()
+                .sorted(Comparator.comparingLong(TimestampResult::getTimestamp)).collect(Collectors.toList());
+        searchResult.byPosition=res.stream().map(timedPosition ->{timedPosition.trimPrecsion(); return new PositionResult(timedPosition.user, timedPosition.point);}).distinct().collect(Collectors.toList());
+        searchResult.byUser=res.stream().map(timedPosition -> new UserResult(timedPosition.user)).distinct()
+                .sorted(Comparator.comparing(UserResult::getUser)).collect(Collectors.toList());
+        Collections.shuffle(searchResult.byPosition);
+        return searchResult;
+    }
+    public List<TimedPosition> getAllPosition(){
+        return  this.archiveRepository.findAll().stream().map(UserArchive::getContent).flatMap(List::stream).collect(Collectors.toList());
     }
 }

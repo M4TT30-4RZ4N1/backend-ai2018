@@ -1,7 +1,7 @@
 package it.polito.ai.project.rest;
 
 import it.polito.ai.project.service.CustomerTransactionService;
-import it.polito.ai.project.service.PositionService;
+import it.polito.ai.project.service.UserArchiveService;
 import it.polito.ai.project.service.model.ClientInteraction.FilterQuery;
 import it.polito.ai.project.service.model.ClientInteraction.SearchResult;
 import it.polito.ai.project.service.model.CustomerTransaction;
@@ -30,16 +30,16 @@ import java.util.stream.Collectors;
 @RequestMapping("/customer")
 public class RestBuyerController {
     private final CustomerTransactionService transactionService;
-    private final PositionService positionService;
+    private final UserArchiveService userArchiveService;
     /**
      * This method allows to generate a RestBuyerController.
      * @param transactionService
      * @param positionService
      */
     @Autowired
-    public RestBuyerController(CustomerTransactionService transactionService, PositionService positionService) {
+    public RestBuyerController(CustomerTransactionService transactionService, UserArchiveService userArchiveService) {
         this.transactionService = transactionService;
-        this.positionService = positionService;
+        this.userArchiveService = userArchiveService;
     }
 
     /**
@@ -65,7 +65,7 @@ public class RestBuyerController {
         List<String> users = filters.getUsersFilter();
         SearchResult polygonPositions = new SearchResult();
         if(polygon.getCoordinates().length != 0){
-            polygonPositions = positionService.getApproximatePositionInIntervalInPolygonInUserList(polygon, new Date(after), new Date(before), users);
+            polygonPositions = userArchiveService.getApproximatePositionInIntervalInPolygonInUserList(polygon, new Date(after), new Date(before), users);
         }
         return polygonPositions;
     }
@@ -91,7 +91,7 @@ public class RestBuyerController {
         List<String> users = filters.getUsersFilter();
         List<TimedPosition> positions;
         if(polygon.getCoordinates().length != 0){
-            positions = positionService.getPositionInIntervalInPolygonInUserList(polygon, new Date(after), new Date(before), users);
+            positions = userArchiveService.getPositionInIntervalInPolygonInUserList(polygon, new Date(after), new Date(before), users);
         }
         else{
             return new ArrayList<>();

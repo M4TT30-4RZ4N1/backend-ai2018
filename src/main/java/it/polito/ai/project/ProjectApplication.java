@@ -6,7 +6,6 @@ import it.polito.ai.project.service.model.CustomerTransaction;
 import it.polito.ai.project.service.model.TimedPosition;
 import it.polito.ai.project.service.model.UserArchive;
 import it.polito.ai.project.service.repositories.CustomerTransactionRepository;
-import it.polito.ai.project.service.repositories.PositionRepository;
 import it.polito.ai.project.service.repositories.UserArchiveRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -18,13 +17,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @SpringBootApplication
 public class ProjectApplication {
-	private final
-    PositionRepository positionRepository;
     private final
     UserRepository userRepository;
     private final
@@ -33,8 +29,7 @@ public class ProjectApplication {
     UserArchiveRepository userArchiveRepository;
 
     @Autowired
-    public ProjectApplication(PositionRepository positionRepository, UserRepository userRepository, CustomerTransactionRepository transactionRepository, UserArchiveRepository userArchiveRepository) {
-        this.positionRepository = positionRepository;
+    public ProjectApplication(UserRepository userRepository, CustomerTransactionRepository transactionRepository, UserArchiveRepository userArchiveRepository) {
         this.userRepository = userRepository;
         this.transactionRepository = transactionRepository;
         this.userArchiveRepository = userArchiveRepository;
@@ -57,7 +52,6 @@ public class ProjectApplication {
             userRepository.save(new User("user2","testpassword","ROLE_USER"));
             userRepository.save(new User("user3","testpassword","ROLE_USER"));
             userRepository.save(new User("user4","testpassword","ROLE_USER"));
-            positionRepository.deleteAll();
 
             // save a couple of customers
             //positionRepository.save(new TimedPosition(45.00, 47.00, new Date().getTime()));

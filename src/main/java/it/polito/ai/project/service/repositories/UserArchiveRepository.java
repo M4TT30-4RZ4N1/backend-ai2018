@@ -25,4 +25,6 @@ public interface UserArchiveRepository extends MongoRepository<UserArchive, Stri
     List<UserArchive> findByOwnerAndDeletedIsFalseAndExcludeContentAndExcludeId(String owner);
 
     List<UserArchive> findByOwnerAndDeletedIsFalse(String user);
+
+    List<UserArchive> findAll();
 }

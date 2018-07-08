@@ -1,14 +1,12 @@
 package it.polito.ai.project.rest;
 
 import it.polito.ai.project.service.CustomerTransactionService;
-import it.polito.ai.project.service.PositionService;
+import it.polito.ai.project.service.UserArchiveService;
 import it.polito.ai.project.service.model.CustomerTransaction;
 import it.polito.ai.project.service.model.TimedPosition;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Role;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,18 +17,18 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin")
 public class RestAdminController {
-    private final PositionService positionService;
     private final CustomerTransactionService transactionService;
+    private final UserArchiveService userArchiveService;
 
     /**
-     * This method allows to generate a RestAdminController.
-     * @param positionService
+     * This method allows to generate a RestAdminController
      * @param transactionService
+     * @param userArchiveService
      */
     @Autowired
-    public RestAdminController(PositionService positionService, CustomerTransactionService transactionService) {
-        this.positionService = positionService;
+    public RestAdminController(CustomerTransactionService transactionService, UserArchiveService userArchiveService) {
         this.transactionService = transactionService;
+        this.userArchiveService = userArchiveService;
     }
 
     /**
@@ -41,7 +39,7 @@ public class RestAdminController {
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
     List<TimedPosition> getAllPositions() {
-        return positionService.getPositions();
+        return userArchiveService.getAllPosition();
     }
 
     /**

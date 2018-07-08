@@ -1,6 +1,12 @@
 package it.polito.ai.project.service;
 
 import it.polito.ai.project.TimedPositionGenerator;
+import it.polito.ai.project.security.User;
+import it.polito.ai.project.security.UserRepository;
+import it.polito.ai.project.service.model.ClientInteraction.PositionResult;
+import it.polito.ai.project.service.model.ClientInteraction.SearchResult;
+import it.polito.ai.project.service.model.ClientInteraction.TimestampResult;
+import it.polito.ai.project.service.model.ClientInteraction.UserResult;
 import it.polito.ai.project.service.model.CustomerTransaction;
 import it.polito.ai.project.service.model.TimedPosition;
 import it.polito.ai.project.service.model.UserArchive;
@@ -17,12 +23,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.wololo.geojson.Point;
+import org.wololo.geojson.Polygon;
 
 import javax.servlet.ServletOutputStream;
 import javax.validation.constraints.AssertTrue;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -41,13 +50,18 @@ public class UserArchiveServiceTest {
     CustomerTransactionService customerTransactionService;
     @Autowired
     CustomerTransactionRepository customerTransactionRepository;
+
+    @Autowired
+    UserRepository userRepository;
     @Before
     public void setUp() throws Exception {
+        userRepository.deleteAll();
         userArchiveRepository.deleteAll();
     }
 
     @After
     public void tearDown() throws Exception {
+        userRepository.deleteAll();
         userArchiveRepository.deleteAll();
     }
     @Test
@@ -173,5 +187,36 @@ public class UserArchiveServiceTest {
         Assert.assertEquals(2, userArchives.size());
         List<TimedPosition> contents = userArchives.stream().flatMap(a -> a.getContent().stream()).collect(Collectors.toList());
         Assert.assertEquals(8, contents.size());
+    }
+    @Test
+    public  void  PositionServiceAproxResearch(){
+        userRepository.save(new User("user1","testpassword","ROLE_USER"));
+        userRepository.save(new User("user2","testpassword","ROLE_USER"));
+        userRepository.save(new User("user3","testpassword","ROLE_USER"));
+        List<TimedPosition> timedpostition=TimedPositionGenerator.get3();
+        userArchiveRepository.save(new UserArchive("user1", "user1"+"_file"+UUID.randomUUID(), timedpostition));
+        userArchiveRepository.save(new UserArchive("user2", "user2"+"_file"+UUID.randomUUID(), timedpostition));
+
+        ArrayList<String> users=new ArrayList<String>();
+        users.add("user1");
+        users.add("user4");
+        double coordinates[][][]={{{0,0},{0,70},{70,70},{70,0},{0,0}}};
+        SearchResult res= userArchiveService.getApproximatePositionInIntervalInPolygonInUserList(new Polygon(coordinates),new Date(0),new Date(),users);
+        System.out.println("----------------Positions------------------");
+        res.getByPosition().forEach(positionResult -> System.out.println(positionResult.toString()));
+        System.out.println("----------------Timestamp------------------");
+        res.getByTimestamp().forEach(timestampResult -> System.out.println(timestampResult.toString()));
+        System.out.println("----------------User------------------");
+        res.getByUser().forEach(userResult -> System.out.println(userResult.toString()));
+        TimestampResult ts1=new TimestampResult("user1",0);
+        TimestampResult ts2=new TimestampResult("user1",60);
+        Assert.assertEquals(2, res.getByTimestamp().size());
+        Assert.assertTrue(res.getByTimestamp().contains(ts1));
+        Assert.assertTrue(res.getByTimestamp().contains(ts2));
+        Assert.assertEquals(1, res.getByUser().size());
+        Assert.assertTrue(res.getByUser().contains(new UserResult("user1")));
+        Assert.assertEquals(1, res.getByPosition().size());
+        double[] coord1={45.0,45.0};
+        Assert.assertTrue(res.getByPosition().contains(new PositionResult("user1",new Point(coord1))));
     }
 }
