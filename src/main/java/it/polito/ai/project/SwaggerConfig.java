@@ -34,10 +34,6 @@ public class SwaggerConfig {
     private String swaggerClientSecret;
     private static final String swaggerTokenURL= "/oauth/token";
     private static final String SECURITY_SCHEMA_OAUTH2 = "oauth2";
-    @Bean(name = "multipartResolver")
-    public CommonsMultipartResolver commonsMultipartResolver(){
-        return new CommonsMultipartResolver();
-    }
 
     @Bean
     public Docket api() {

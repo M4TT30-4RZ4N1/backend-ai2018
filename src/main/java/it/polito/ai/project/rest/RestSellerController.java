@@ -128,10 +128,10 @@ public class RestSellerController {
             @ApiResponse(code = 401, message = "You are not authorized to create the resource"),
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
     })
-    @RequestMapping(value = "/archives", method = RequestMethod.POST,produces = "application/json")
+    @RequestMapping(value = "/upload", method = RequestMethod.POST,produces = "application/json")
     @ResponseStatus(value = HttpStatus.CREATED)
     public @ResponseBody
-    Resource<UserArchive> createArchiveByUpload(@ApiParam("File with list of timed postition")@RequestParam("file") MultipartFile file) {
+    Resource<UserArchive> createArchiveByUpload(@ApiParam("File with list of timed positions")@RequestParam("file") MultipartFile file) {
         if(!file.getContentType().equals("application/json"))
             throw new UnsupportedMediaTypeStatusException("File format not supported");
         try {
@@ -151,16 +151,16 @@ public class RestSellerController {
         }
 
     }
-/*
+
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "File created with metadata"),
             @ApiResponse(code = 401, message = "You are not authorized to create the resource"),
-            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 403, message = "The access to the resource you were trying to reach is forbidden"),
     })
     @RequestMapping(value = "/archives", method = RequestMethod.POST, consumes = {"application/json"},produces = "application/json")
     @ResponseStatus(value = HttpStatus.CREATED)
     public @ResponseBody
-    Resource<UserArchive> createArchive(@ApiParam("List of TimedPosition") @RequestBody List<TimedPosition> positions) {
+    Resource<UserArchive> createArchive(@ApiParam("List of timed positions") @RequestBody List<TimedPosition> positions) {
         try {
             String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             UserArchive archive=userArchiveService.addArchive(username, positions);
@@ -172,7 +172,7 @@ public class RestSellerController {
         }
 
     }
-    */
+
 
     /**
      * This method allows to download a list of zip archives.

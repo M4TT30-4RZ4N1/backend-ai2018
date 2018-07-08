@@ -62,7 +62,6 @@ public class UserArchiveService {
     }
 
     private List<TimedPosition> validate(String username, List<TimedPosition> rawContent) {
-        //TODO validare la lista di timedPositions recuperando l'ultima posizione uploadata dal db
         List<TimedPosition> content = new ArrayList<>();
         first = userArchiveRepositoryImpl.findLastPosition(username);
         rawContent.forEach(p -> {
