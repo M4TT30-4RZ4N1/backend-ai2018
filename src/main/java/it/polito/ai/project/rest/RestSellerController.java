@@ -132,8 +132,8 @@ public class RestSellerController {
     @ResponseStatus(value = HttpStatus.CREATED)
     public @ResponseBody
     Resource<UserArchive> createArchiveByUpload(@ApiParam("File with list of timed positions")@RequestParam("file") MultipartFile file) {
-        if(!file.getContentType().equals("application/json"))
-            throw new UnsupportedMediaTypeStatusException("File format not supported");
+        //if(!file.getContentType().equals("application/json"))
+           // throw new UnsupportedMediaTypeStatusException("File format not supported");
         try {
             String json = new String(file.getBytes());
             ObjectMapper objectMapper = new ObjectMapper();
