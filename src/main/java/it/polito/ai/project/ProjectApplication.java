@@ -56,6 +56,7 @@ public class ProjectApplication {
             userRepository.save(new User("user1","testpassword","ROLE_USER"));
             userRepository.save(new User("user2","testpassword","ROLE_USER"));
             userRepository.save(new User("user3","testpassword","ROLE_USER"));
+            userRepository.save(new User("user4","testpassword","ROLE_USER"));
             positionRepository.deleteAll();
 
             // save a couple of customers

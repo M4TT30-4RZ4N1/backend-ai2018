@@ -29,6 +29,7 @@ public class UserArchiveRepositoryImpl {
     public TimedPosition findLastPosition(String owner){
         Query query = new Query();
         query.addCriteria(Criteria.where("owner").is(owner));
+        query.addCriteria(Criteria.where("deleted").is(false));
         query.with(new Sort(Sort.Direction.DESC, "content.timestamp"));
         query.limit(1);
         UserArchive lastArchive = mongoTemplate.findOne(query, UserArchive.class);
