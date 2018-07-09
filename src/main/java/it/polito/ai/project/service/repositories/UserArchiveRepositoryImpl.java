@@ -57,7 +57,7 @@ public class UserArchiveRepositoryImpl {
         List<Point> springPoints = new ArrayList<>();
         for (int i = 0; i < jsonpolygon.getCoordinates().length; i++) {
             for (int j = 0; j < jsonpolygon.getCoordinates()[i].length; j++) {
-                springPoints.add(new Point(jsonpolygon.getCoordinates()[i][j][1], jsonpolygon.getCoordinates()[i][j][0]));
+                springPoints.add(new Point(jsonpolygon.getCoordinates()[i][j][0], jsonpolygon.getCoordinates()[i][j][1]));
             }
         }
         org.springframework.data.geo.Polygon polygon =

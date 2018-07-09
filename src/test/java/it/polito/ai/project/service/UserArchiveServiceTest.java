@@ -216,7 +216,7 @@ public class UserArchiveServiceTest {
         timedpostition.add(new TimedPosition(45.00001, 50.00, new Date(59).getTime()));
         timedpostition.add(new TimedPosition(44.99999, 50.00, new Date(99).getTime()));
         timedpostition.add(new TimedPosition(44.99998, 50.00, new Date(119).getTime()));*/
-        double coordinates[][][]={{{44.99,170.0001},{45.01,170.0001},{45.01,169.9999},{44.99,169.9999},{44.99,170.0001}}};
+        double coordinates[][][]={{{170.0001,44.99},{170.0001,45.01},{169.9999,45.01},{169.9999,44.99},{170.0001,44.99}}};
         SearchResult res= userArchiveService.getApproximatePositionInIntervalInPolygonInUserList(new Polygon(coordinates),new Date(0),new Date(),users);
         System.out.println("----------------Positions------------------");
         res.getByPosition().forEach(positionResult -> System.out.println(positionResult.toString()));

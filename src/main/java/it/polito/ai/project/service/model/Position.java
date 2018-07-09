@@ -15,7 +15,7 @@ import org.wololo.geojson.Point;
 public class Position {
     @Id
     private String id;
-    @ApiModelProperty(notes = "Point (you must fill only coordinates with an array of 2 position)")
+    @ApiModelProperty(notes = "Point (you must fill only coordinates with an array of 2 element [long,lat]")
     @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
     public Point point;
 
