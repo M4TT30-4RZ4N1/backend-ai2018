@@ -189,6 +189,18 @@ public class UserArchiveServiceTest {
         Assert.assertEquals(8, contents.size());
     }
     @Test
+    public  void TestPositionLatLong(){
+        List<TimedPosition> timedPositions = new ArrayList<TimedPosition>();
+        timedPositions.add(new TimedPosition(89,170,0));
+        timedPositions.add(new TimedPosition(89,-170,100000));
+        timedPositions.add(new TimedPosition(-89,-170,200000));
+        timedPositions.add(new TimedPosition(-89,+170,300000));
+        userArchiveRepository.save(new UserArchive("user1", "user1"+"_file"+UUID.randomUUID(), timedPositions));
+        List<UserArchive> userArchives = userArchiveRepository.findAll();
+        System.out.println(userArchives.get(0).getContent());
+        Assert.assertEquals(1, userArchives.size());
+    }
+    @Test
     public  void  PositionServiceAproxResearch(){
         userRepository.save(new User("user1","testpassword","ROLE_USER"));
         userRepository.save(new User("user2","testpassword","ROLE_USER"));
@@ -199,8 +211,12 @@ public class UserArchiveServiceTest {
 
         ArrayList<String> users=new ArrayList<String>();
         users.add("user1");
-        users.add("user4");
-        double coordinates[][][]={{{0,0},{0,70},{70,70},{70,0},{0,0}}};
+        users.add("user4");/*
+                timedpostition.add(new TimedPosition(45.00002, 50.00, new Date(0).getTime()));
+        timedpostition.add(new TimedPosition(45.00001, 50.00, new Date(59).getTime()));
+        timedpostition.add(new TimedPosition(44.99999, 50.00, new Date(99).getTime()));
+        timedpostition.add(new TimedPosition(44.99998, 50.00, new Date(119).getTime()));*/
+        double coordinates[][][]={{{44.99,170.0001},{45.01,170.0001},{45.01,169.9999},{44.99,169.9999},{44.99,170.0001}}};
         SearchResult res= userArchiveService.getApproximatePositionInIntervalInPolygonInUserList(new Polygon(coordinates),new Date(0),new Date(),users);
         System.out.println("----------------Positions------------------");
         res.getByPosition().forEach(positionResult -> System.out.println(positionResult.toString()));
@@ -216,7 +232,7 @@ public class UserArchiveServiceTest {
         Assert.assertEquals(1, res.getByUser().size());
         Assert.assertTrue(res.getByUser().contains(new UserResult("user1")));
         Assert.assertEquals(1, res.getByPosition().size());
-        double[] coord1={45.0,45.0};
+        double[] coord1={170.0,45.0};
         Assert.assertTrue(res.getByPosition().contains(new PositionResult("user1",new Point(coord1))));
     }
 }

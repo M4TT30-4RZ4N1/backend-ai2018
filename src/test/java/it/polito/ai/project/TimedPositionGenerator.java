@@ -17,10 +17,10 @@ public class TimedPositionGenerator {
     }
     public static List<TimedPosition> get3(){
         ArrayList<TimedPosition> timedpostition=new ArrayList<TimedPosition>();
-        timedpostition.add(new TimedPosition(45.00002, 45.00, new Date(0).getTime()));
-        timedpostition.add(new TimedPosition(45.00001, 45.00, new Date(59).getTime()));
-        timedpostition.add(new TimedPosition(44.99999, 45.00, new Date(99).getTime()));
-        timedpostition.add(new TimedPosition(44.99998, 45.00, new Date(119).getTime()));
+        timedpostition.add(new TimedPosition(45.00002, 170.00, new Date(0).getTime()));
+        timedpostition.add(new TimedPosition(45.00001, 170.00, new Date(59).getTime()));
+        timedpostition.add(new TimedPosition(44.99999, 170.00, new Date(99).getTime()));
+        timedpostition.add(new TimedPosition(44.99998, 170.00, new Date(119).getTime()));
         return timedpostition;
     }
 
