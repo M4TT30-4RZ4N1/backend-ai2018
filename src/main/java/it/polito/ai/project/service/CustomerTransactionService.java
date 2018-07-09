@@ -28,4 +28,9 @@ public class CustomerTransactionService {
     public List<CustomerTransaction> getTransactions(){
         return new ArrayList<>(transactionRepository.findAll());
     }
+
+    @PreAuthorize("hasRole( 'CUSTOMER' )")
+    public List<CustomerTransaction> getTransactionByCustomerAndFilename(String customer, String filename){
+        return new ArrayList<>(transactionRepository.findByCustomerIdAndFilename(customer, filename));
+    }
 }

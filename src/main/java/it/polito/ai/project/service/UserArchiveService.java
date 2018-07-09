@@ -55,6 +55,12 @@ public class UserArchiveService {
     }
 
     @PreAuthorize("hasRole( 'USER' )")
+    public void updateArchive(UserArchive archive){
+        //si assume che il conenuto dell'archivio sia valido
+        archiveRepository.save(archive);
+    }
+
+    @PreAuthorize("hasRole( 'USER' )")
     public UserArchive addArchive(String username, List<TimedPosition> rawContent){
         String filename = username+"_"+(new Date().getTime())+"_"+UUID.randomUUID().toString().replace("-", "")+".json";
         List<TimedPosition> content = validate(username, rawContent);
@@ -86,20 +92,17 @@ public class UserArchiveService {
     }
     public List<UserArchive> getOwnArchivesWithoutContent(String user) {
         List<UserArchive> res = new ArrayList<>(archiveRepository.findByOwnerAndDeletedIsFalseAndExcludeContentAndExcludeId(user));
-        //controllare se l'interfaccia spring fa il suo dovere, altrimenti creare un implementazione come per le posizioni
         System.out.println("Archivi caricati: " + res);
         return res;
     }
     public List<UserArchive> getOwnArchivesWithoutContent(String user,int pagenumber,int size) {
         Pageable page=PageRequest.of(pagenumber,size);
         List<UserArchive> res = new ArrayList<>(archiveRepository.findByOwnerAndDeletedIsFalseAndExcludeContentAndExcludeId(user,page));
-        //controllare se l'interfaccia spring fa il suo dovere, altrimenti creare un implementazione come per le posizioni
         System.out.println("Archivi caricati: " + res);
         return res;
     }
     private List<UserArchive> getOwnArchives(String user) {
         List<UserArchive> res = new ArrayList<>(archiveRepository.findByOwnerAndDeletedIsFalse(user));
-        //controllare se l'interfaccia spring fa il suo dovere, altrimenti creare un implementazione come per le posizioni
         System.out.println("Archivi caricati: " + res);
         return res;
     }
@@ -107,7 +110,6 @@ public class UserArchiveService {
         List<CustomerTransaction> tmp = new ArrayList<>(transactionRepository.findByCustomerId(user));
         List<UserArchive> res = tmp.stream().map(customerTransaction -> archiveRepository.findByFilenameAndExcludeContentAndExcludeIdAndExcludeCounterAndExcludeDelete(customerTransaction.getFilename()))
                 .collect(Collectors.toList());
-        //controllare se l'interfaccia spring fa il suo dovere, altrimenti creare un implementazione come per le posizioni
         System.out.println("Archivi acquistati: " + res);
         return res;
     }
@@ -115,14 +117,16 @@ public class UserArchiveService {
         List<CustomerTransaction> tmp = new ArrayList<>(transactionRepository.findByCustomerId(user,PageRequest.of(page,size)));
         List<UserArchive> res = tmp.stream().map(customerTransaction -> archiveRepository.findByFilenameAndExcludeContentAndExcludeIdAndExcludeCounterAndExcludeDelete(customerTransaction.getFilename()))
                 .collect(Collectors.toList());
-        //controllare se l'interfaccia spring fa il suo dovere, altrimenti creare un implementazione come per le posizioni
         System.out.println("Archivi acquistati: " + res);
         return res;
     }
     private UserArchive findArchiveByFilename(String filename) {
         UserArchive res=archiveRepository.findByFilename(filename);
-        //controllare se l'interfaccia spring fa il suo dovere, altrimenti creare un implementazione come per le posizioni
-        System.out.println("Archivo acquistati: " + res);
+        return res;
+    }
+
+    public UserArchive findArchiveByFilenameAndDeletedIsFalse(String filename) {
+        UserArchive res = archiveRepository.findByFilenameAndDeletedIsFalse(filename);
         return res;
     }
 
@@ -215,6 +219,11 @@ public class UserArchiveService {
                 .sorted(Comparator.comparing(UserResult::getUser)).collect(Collectors.toList());
         Collections.shuffle(searchResult.byPosition);
         return searchResult;
+    }
+
+    public List<UserArchive> getSearchArchive(Polygon polygon, Date after, Date before, List<String> users){
+        List<UserArchive> res = new ArrayList<>(userArchiveRepositoryImpl.getArchiveWithPositionInIntervalInPolygonInUserList(polygon, after.getTime(), before.getTime(), users));
+        return res;
     }
     public List<TimedPosition> getAllPosition(){
         return  this.archiveRepository.findAll().stream().map(UserArchive::getContent).flatMap(List::stream).collect(Collectors.toList());

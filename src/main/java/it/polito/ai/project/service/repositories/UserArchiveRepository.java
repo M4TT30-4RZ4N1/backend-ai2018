@@ -15,6 +15,8 @@ public interface UserArchiveRepository extends MongoRepository<UserArchive, Stri
 
     UserArchive findByFilename(String filename);
 
+    UserArchive findByFilenameAndDeletedIsFalse(String filename);
+
     @Query(value="{'filename' : ?0}", fields="{content : 0,id : 0,deleted: 0, counter: 0}")
     UserArchive findByFilenameAndExcludeContentAndExcludeIdAndExcludeCounterAndExcludeDelete(String filename);
 

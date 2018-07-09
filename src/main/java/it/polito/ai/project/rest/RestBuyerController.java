@@ -2,10 +2,13 @@ package it.polito.ai.project.rest;
 
 import it.polito.ai.project.service.CustomerTransactionService;
 import it.polito.ai.project.service.UserArchiveService;
+import it.polito.ai.project.service.model.ClientInteraction.ArchiveTransaction;
 import it.polito.ai.project.service.model.ClientInteraction.FilterQuery;
 import it.polito.ai.project.service.model.ClientInteraction.SearchResult;
 import it.polito.ai.project.service.model.CustomerTransaction;
 import it.polito.ai.project.service.model.TimedPosition;
+import it.polito.ai.project.service.model.UserArchive;
+import javassist.tools.web.BadHttpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
@@ -17,10 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.wololo.geojson.Polygon;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -34,7 +34,7 @@ public class RestBuyerController {
     /**
      * This method allows to generate a RestBuyerController.
      * @param transactionService
-     * @param positionService
+     * @param userArchiveService
      */
     @Autowired
     public RestBuyerController(CustomerTransactionService transactionService, UserArchiveService userArchiveService) {
@@ -79,40 +79,58 @@ public class RestBuyerController {
      * @return  the list of positions detected
      */
     @RequestMapping(value = "/buy", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(value = HttpStatus.CREATED)
+    @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
-    List<TimedPosition> confirmTransaction(HttpSession session,@RequestBody FilterQuery filters,
-                                           @Param("after") Long after, @Param("before") Long before) throws Exception {
+    List<ArchiveTransaction> getTransactions(HttpSession session, @RequestBody FilterQuery filters,
+                                             @Param("after") Long after, @Param("before") Long before) throws Exception {
 
         if(after == null || before == null){
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"Invalid parameters");
         }
         Polygon polygon = filters.getGeoFilter();
         List<String> users = filters.getUsersFilter();
-        List<TimedPosition> positions;
+        List<UserArchive> archives;
         if(polygon.getCoordinates().length != 0){
-            positions = userArchiveService.getPositionInIntervalInPolygonInUserList(polygon, new Date(after), new Date(before), users);
+            archives = userArchiveService.getSearchArchive(polygon, new Date(after), new Date(before), users);
         }
         else{
             return new ArrayList<>();
         }
-        double totalPrice = 100;
-        double positionPrice = totalPrice/positions.size();
-        Map<String, Long> rawTransactions = positions.stream()
-                .map(TimedPosition::getUser)
-                .collect(Collectors.groupingBy(u -> u, Collectors.counting()));
-        // get username
-        String user = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        for(Map.Entry<String, Long> user_nPositions : rawTransactions.entrySet()){
-            int nPositions = user_nPositions.getValue().intValue();
-            CustomerTransaction transaction = new CustomerTransaction();
-            transaction.setCustomerId(user);
-            transaction.setUserId(user_nPositions.getKey());
-            transaction.setnPositions(nPositions);
-            transaction.setPrice(nPositions*positionPrice); // PRICE SET TO 1
-            transactionService.addTransaction(transaction);
-        }
-        return positions;
+        List<ArchiveTransaction> result = new ArrayList<>();
+        String customer = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        archives.forEach(a ->{
+            List<CustomerTransaction> transactions = transactionService.getTransactionByCustomerAndFilename(customer, a.getFilename());
+            if(transactions.size() > 0 || a.getOwner().equals(customer)){
+                result.add(new ArchiveTransaction(a.getFilename(), true));
+            }else{
+                result.add(new ArchiveTransaction(a.getFilename(), false));
+            }
+        });
+        return result;
     }
 
+    @RequestMapping(value = "/buy/confirm", method = RequestMethod.POST, consumes = {"application/json"})
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public void confirmTransactions(@RequestBody List<ArchiveTransaction> archiveToBought){
+        double totalPrice = 100;
+        double positionPrice = totalPrice/archiveToBought.size();
+        String customer = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        archiveToBought.forEach(a ->{
+            List<CustomerTransaction> transactions = transactionService.getTransactionByCustomerAndFilename(customer, a.getFilename());
+            if(transactions.size() == 0){
+                UserArchive archive = userArchiveService.findArchiveByFilenameAndDeletedIsFalse(a.getFilename());
+                archive.setCounter(archive.getCounter()+1);
+                //System.out.println("Updating archive: " + archive);
+                userArchiveService.updateArchive(archive);
+                CustomerTransaction transaction = new CustomerTransaction();
+                transaction.setCustomerId(customer);
+                transaction.setUserId(archive.getOwner());
+                transaction.setFilename(a.getFilename());
+                transaction.setPrice(positionPrice); // PRICE SET TO 1
+                //System.out.println("Saving new transaction: " + transaction);
+                transactionService.addTransaction(transaction);
+            }
+        });
+        return;
+    }
 }

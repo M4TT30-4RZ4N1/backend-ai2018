@@ -1,6 +1,7 @@
 package it.polito.ai.project.service.repositories;
 
 import com.mongodb.BasicDBObject;
+import it.polito.ai.project.service.model.ClientInteraction.ArchiveTransaction;
 import it.polito.ai.project.service.model.TimedPosition;
 import it.polito.ai.project.service.model.UserArchive;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,19 +32,32 @@ public class UserArchiveRepositoryImpl {
 
     public TimedPosition findLastPosition(String owner){
         Query query = new Query();
+        Boolean b = false;
         query.addCriteria(Criteria.where("owner").is(owner));
-        query.addCriteria(Criteria.where("deleted").is(false));
+        query.addCriteria(Criteria.where("deleted").is(b));
         query.with(new Sort(Sort.Direction.DESC, "content.timestamp"));
         query.limit(1);
         UserArchive lastArchive = mongoTemplate.findOne(query, UserArchive.class);
+        System.out.println("Last archive: " + lastArchive);
         if (lastArchive == null) return null;
         TimedPosition maxObject = lastArchive.getContent().stream().max(Comparator.comparing(TimedPosition::getTimestamp)).get();
-        System.out.println(maxObject);
+        System.out.println("Last position: " + maxObject);
         return maxObject;
     }
     public List<TimedPosition> getPositionInIntervalInPolygonInUserList(Polygon jsonpolygon, long after, long before, List<String> user) {
-        if(mongoTemplate == null) throw new RuntimeException("Mongo DB not initialized");
         List<TimedPosition> result = null;
+        result= getArchiveWithPositionInIntervalInPolygonInUserList(jsonpolygon, after, before, user)
+                .stream().map(userArchive -> {
+                    userArchive.getContent().forEach(timedPosition -> timedPosition.user=userArchive.getOwner());
+                    return  userArchive.getContent();
+                }).flatMap(List::stream).collect(Collectors.toList());
+        System.out.println("Search result: " + result);
+        return result;
+    }
+
+    public List<UserArchive> getArchiveWithPositionInIntervalInPolygonInUserList(Polygon jsonpolygon, long after, long before, List<String> user) {
+        if(mongoTemplate == null) throw new RuntimeException("Mongo DB not initialized");
+        List<UserArchive> result = null;
         List<Point> springPoints = new ArrayList<>();
         for (int i = 0; i < jsonpolygon.getCoordinates().length; i++) {
             for (int j = 0; j < jsonpolygon.getCoordinates()[i].length; j++) {
@@ -56,13 +70,10 @@ public class UserArchiveRepositoryImpl {
         query.addCriteria(Criteria.where("content").elemMatch(
                 Criteria.where("timestamp").gt(after).lt(before)
                         .and("point").within(polygon)));
+        query.addCriteria(Criteria.where("deleted").is(false));
         if(user.size() > 0)
             query.addCriteria(Criteria.where("owner").in(user));
-        result= mongoTemplate.find(query,UserArchive.class)
-                .stream().map(userArchive -> {
-                    userArchive.getContent().forEach(timedPosition -> timedPosition.user=userArchive.getOwner());
-                    return  userArchive.getContent();
-                }).flatMap(List::stream).collect(Collectors.toList());
+        result= mongoTemplate.find(query,UserArchive.class);
         System.out.println("Search result: " + result);
         return result;
     }

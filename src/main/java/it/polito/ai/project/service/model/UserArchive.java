@@ -20,7 +20,7 @@ public class UserArchive{
 
     @ApiModelProperty(notes = "Owner of Archive",example = "mickeymouse")
     private String owner;
-    @ApiModelProperty(notes = "Archive Filename",example = "mickeymouse-uiid.json")
+    @ApiModelProperty(notes = "Archive Filename",example = "mickeymouse_uuid.json")
     @Indexed(unique = true)
     private String filename;
     @ApiModelProperty(notes = "Archive Purchase Counter",example = "2")
