@@ -51,7 +51,7 @@ public class RestBuyerController {
      * @param before
      * @return  the list of positions detected
      */
-    @RequestMapping(value="/search", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value="/search", method = RequestMethod.POST, params = {"after","before"}, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
     SearchResult getPositionInIntervalInPolygon(HttpSession session, RedirectAttributes redirect,
@@ -78,7 +78,7 @@ public class RestBuyerController {
      * @param before
      * @return  the list of positions detected
      */
-    @RequestMapping(value = "/buy", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/buy", method = RequestMethod.POST, params = {"after","before"}, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
     List<ArchiveTransaction> getTransactions(HttpSession session, @RequestBody FilterQuery filters,

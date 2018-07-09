@@ -44,13 +44,9 @@ public class UserArchiveRepositoryImpl {
         System.out.println("Last position: " + maxObject);
         return maxObject;
     }
-    public List<TimedPosition> getPositionInIntervalInPolygonInUserList(Polygon jsonpolygon, long after, long before, List<String> user) {
-        List<TimedPosition> result = null;
-        result= getArchiveWithPositionInIntervalInPolygonInUserList(jsonpolygon, after, before, user)
-                .stream().map(userArchive -> {
-                    userArchive.getContent().forEach(timedPosition -> timedPosition.user=userArchive.getOwner());
-                    return  userArchive.getContent();
-                }).flatMap(List::stream).collect(Collectors.toList());
+    public List<UserArchive> getPositionInIntervalInPolygonInUserList(Polygon jsonpolygon, long after, long before, List<String> user) {
+        List<UserArchive> result = null;
+        result= getArchiveWithPositionInIntervalInPolygonInUserList(jsonpolygon, after, before, user);
         System.out.println("Search result: " + result);
         return result;
     }
