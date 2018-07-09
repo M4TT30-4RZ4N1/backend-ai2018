@@ -23,16 +23,11 @@ public class RepositoryUserDetailsService implements UserDetailsService {
      * @param username
      * @param password
      */
-    public void addUser(String username, String password){
-        userRepository.save(new User(username, password,"ROLE_USER"));
-    }
-
-
-    public void addUser(String email, String username, String password){
+     public void addUser(String username, String password){
         ArrayList<GrantedAuthority> grantedAuthorities=new ArrayList<GrantedAuthority>();
         grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_CUSTOMER"));
-        userRepository.save(new User(email, username, password,grantedAuthorities));
+        userRepository.save(new User(username, password,grantedAuthorities));
     }
     /**
      * Cerca e carica gli utenti dal database per username

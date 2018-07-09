@@ -32,19 +32,18 @@ public class RepositoryUserDetailsServiceTest {
     }
     @Test
     public void addUser() {
-        repositoryUserDetailsService.addUser("pippo@example.com","pippo","pluto");
+        repositoryUserDetailsService.addUser("pippo","pluto");
         Assert.assertEquals(1, userRepository.findAll().size());
         Assert.assertEquals("pippo", userRepository.findAll().get(0).getUsername());
-        Assert.assertEquals("pippo@example.com", userRepository.findAll().get(0).getEmail());
     }
     @Test(expected = DuplicateKeyException.class)
     public void addUserDuplicate() {
-        repositoryUserDetailsService.addUser("pippo@example.com","pippo","pluto");
-        repositoryUserDetailsService.addUser("pippo@example.com","pippo","pluto");
+        repositoryUserDetailsService.addUser("pippo","pluto");
+        repositoryUserDetailsService.addUser("pippo","pluto");
     }
     @Test
     public void loadUserByUsername() {
-        repositoryUserDetailsService.addUser("pippo@example.com","pippo","pluto");
+        repositoryUserDetailsService.addUser("pippo","pluto");
         Assert.assertNotNull(repositoryUserDetailsService.loadUserByUsername("pippo"));
     }
     @Test(expected = UsernameNotFoundException.class)

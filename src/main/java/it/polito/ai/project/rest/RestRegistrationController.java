@@ -62,7 +62,7 @@ public class RestRegistrationController {
             throw new DuplicateUserException("User already present");
         }catch(UsernameNotFoundException e){
             try {
-                userDetailsService.addUser(details.getEmail(), details.getUsername(), details.getPassword());
+                userDetailsService.addUser(details.getUsername(), details.getPassword());
             }catch(Throwable e2){
                 throw new RuntimeException("Error adding the user");
             }

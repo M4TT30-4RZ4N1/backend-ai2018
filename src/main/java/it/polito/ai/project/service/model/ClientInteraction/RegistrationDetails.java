@@ -3,7 +3,6 @@ package it.polito.ai.project.service.model.ClientInteraction;
  * This class is related to RegistrationDetails.
  */
 public class RegistrationDetails {
-    private String email;
     private String username;
     private String password;
 
@@ -12,29 +11,14 @@ public class RegistrationDetails {
 
     /**
      * This method allows to set new RegistrationDetails for a user.
-     * @param email
      * @param username
      * @param password
      */
     public RegistrationDetails(String email, String username, String password) {
-        this.email = email;
         this.username = username;
         this.password = password;
     }
 
-    /**
-     * This method allows to get the email.
-     */
-    public String getEmail() {
-        return email;
-    }
-    /**
-     * This method allows to set the email.
-     * @param email
-     */
-    public void setEmail(String email) {
-        this.email = email;
-    }
     /**
      * This method allows to get the username.
      */

@@ -16,7 +16,6 @@ public class User implements UserDetails {
     private  String password;
     @Indexed(unique = true)
     private  String username;
-    private  String email;
     private  boolean accountNonExpired;
     private  boolean accountNonLocked;
     private  boolean credentialsNonExpired;
@@ -33,8 +32,7 @@ public class User implements UserDetails {
         this.enabled = enabled;
 
     }
-    public  User(String email, String username, String plainpassword, Collection<GrantedAuthority> grantedAuthorities){
-        this.email = email;
+    public  User(String username, String plainpassword, Collection<GrantedAuthority> grantedAuthorities){
         this.username=username;
         this.password= new BCryptPasswordEncoder(4).encode(plainpassword);
         this.accountNonExpired=true;
@@ -43,20 +41,8 @@ public class User implements UserDetails {
         this.enabled=true;
         this.authorities= grantedAuthorities;
     }
-    public  User(String email, String username, String plainpassword, String role){
-        this.email = email;
-        this.username=username;
-        this.password= new BCryptPasswordEncoder(4).encode(plainpassword);
-        this.accountNonExpired=true;
-        this.accountNonLocked=true;
-        this.credentialsNonExpired=true;
-        this.enabled=true;
-        this.authorities= new ArrayList<>();
-        this.authorities.add(new SimpleGrantedAuthority(role));
-    }
 
     public  User(String username, String plainpassword, String role){
-        this.email = "";
         this.username=username;
         this.password= new BCryptPasswordEncoder(4).encode(plainpassword);
         this.accountNonExpired=true;
@@ -67,13 +53,6 @@ public class User implements UserDetails {
         this.authorities.add(new SimpleGrantedAuthority(role));
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
     @Override
     public String getPassword() {
