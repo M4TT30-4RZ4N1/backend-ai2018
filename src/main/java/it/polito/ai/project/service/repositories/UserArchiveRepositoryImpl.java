@@ -67,7 +67,7 @@ public class UserArchiveRepositoryImpl {
                 Criteria.where("timestamp").gt(after).lt(before)
                         .and("point").within(polygon)));
         query.addCriteria(Criteria.where("deleted").is(false));
-        if(user.size() > 0)
+        if(user!=null && user.size() > 0)
             query.addCriteria(Criteria.where("owner").in(user));
         result= mongoTemplate.find(query,UserArchive.class);
         System.out.println("Search result: " + result);
