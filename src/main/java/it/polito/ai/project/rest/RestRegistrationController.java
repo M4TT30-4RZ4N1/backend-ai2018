@@ -70,9 +70,9 @@ public class RestRegistrationController {
                     userDetailsService.addUser(details.getUsername(),details.getPassword());
                 }
                 if(origin!=null&&!origin.isEmpty()&&!origin.equals(getBaseUrl(request))) {
-                    userDetailsService.addUserNoActive(details.getEmail(), details.getUsername(), details.getPassword(), origin + "/guest/activate/",true);
+                    userDetailsService.addUserNoActive(details.getEmail(), details.getUsername(), details.getPassword(), origin + "/activate/",true);
                 }else{
-                    userDetailsService.addUserNoActive(details.getEmail(), details.getUsername(), details.getPassword(), origin + "/guest/activate/",false);
+                    userDetailsService.addUserNoActive(details.getEmail(), details.getUsername(), details.getPassword(), getBaseUrl(request) + "/activate/",false);
                 }
             }catch(Throwable e2){
                 throw new RuntimeException("Error adding the user, Please try later");
