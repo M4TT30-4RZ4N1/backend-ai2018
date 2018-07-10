@@ -14,11 +14,16 @@ import org.springframework.stereotype.Service;
 import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class RepositoryUserDetailsService implements UserDetailsService {
     private final EmailService emailService;
     private UserRepository userRepository;
+    public static final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+
+    public static final Pattern VALID_USERNAME_REGEX  = Pattern.compile("[A-Za-z0-9]");
 
     @Autowired
     public RepositoryUserDetailsService(EmailService emailService) {
@@ -32,6 +37,16 @@ public class RepositoryUserDetailsService implements UserDetailsService {
      */
     public void addUser(String username, String password){
         userRepository.save(new User(username, password,"ROLE_USER"));
+    }
+
+
+    public boolean validateEmail(String emailStr) {
+        Matcher matcher = VALID_EMAIL_ADDRESS_REGEX .matcher(emailStr);
+        return matcher.find();
+    }
+
+    public boolean validateUser(String user){
+        return user.matches("[^~`@\\s#$]*");
     }
 
 

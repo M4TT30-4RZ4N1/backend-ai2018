@@ -32,7 +32,7 @@ public class EmailService {
             emailcontent = emailcontent.replace("-username-", username).replace("-url-", activate);
             this.sendGridEmailService.sendHTML("admin@r4ffy.info", email, "Activate Account", emailcontent);
         }catch (Exception e){
-            throw new EmailException("Bachend Failure: Unable to send Activation Email!");
+            throw new EmailException("Backend Failure: Unable to send Activation Email!");
         }
     }
 }

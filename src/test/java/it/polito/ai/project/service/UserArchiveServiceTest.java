@@ -1,6 +1,7 @@
 package it.polito.ai.project.service;
 
 import it.polito.ai.project.TimedPositionGenerator;
+import it.polito.ai.project.security.RepositoryUserDetailsService;
 import it.polito.ai.project.security.User;
 import it.polito.ai.project.security.UserRepository;
 import it.polito.ai.project.service.model.ClientInteraction.PositionResult;
@@ -50,6 +51,8 @@ public class UserArchiveServiceTest {
     CustomerTransactionService customerTransactionService;
     @Autowired
     CustomerTransactionRepository customerTransactionRepository;
+    @Autowired
+    RepositoryUserDetailsService userDetailsService;
 
     @Autowired
     UserRepository userRepository;
@@ -64,6 +67,19 @@ public class UserArchiveServiceTest {
         userRepository.deleteAll();
         userArchiveRepository.deleteAll();
     }
+
+    @Test
+    public void registrationValidation(){
+        String email_OK = "antonio@test.it";
+        String email_NOT_OK = "antonio.it";
+        assertTrue(userDetailsService.validateEmail(email_OK) == true);
+        assertTrue(userDetailsService.validateEmail(email_NOT_OK) == false);
+        String user_OK = "Antonio94";
+        String user_NOT_OK = "antonio@94";
+        assertTrue(userDetailsService.validateUser(user_OK) == true);
+        assertTrue(userDetailsService.validateUser(user_NOT_OK) == false);
+    }
+
     @Test
     public void addArchive() {
 
