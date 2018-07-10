@@ -5,12 +5,9 @@ import it.polito.ai.project.security.RepositoryUserDetailsService;
 import it.polito.ai.project.service.model.ClientInteraction.RegistrationDetails;
 import it.polito.ai.project.service.model.CustomException.DuplicateUserException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-import sun.net.httpserver.HttpServerImpl;
 
 import javax.servlet.http.HttpServletRequest;
 import java.nio.file.AccessDeniedException;
