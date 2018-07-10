@@ -1,10 +1,23 @@
 package it.polito.ai.project.service.model.ClientInteraction;
+
+import javafx.scene.effect.SepiaTone;
+
 /**
  * This class is related to RegistrationDetails.
  */
 public class RegistrationDetails {
     private String username;
     private String password;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    private String email;
 
     public RegistrationDetails() {
     }
@@ -17,6 +30,7 @@ public class RegistrationDetails {
     public RegistrationDetails(String email, String username, String password) {
         this.username = username;
         this.password = password;
+        this.email=email;
     }
 
     /**
