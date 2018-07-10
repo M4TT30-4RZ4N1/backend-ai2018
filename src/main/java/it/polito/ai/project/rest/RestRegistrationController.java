@@ -2,6 +2,7 @@ package it.polito.ai.project.rest;
 
 import io.swagger.annotations.ApiParam;
 import it.polito.ai.project.security.RepositoryUserDetailsService;
+import it.polito.ai.project.service.EmailException;
 import it.polito.ai.project.service.model.ClientInteraction.RegistrationDetails;
 import it.polito.ai.project.service.model.CustomException.DuplicateUserException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,16 +59,23 @@ public class RestRegistrationController {
     @RequestMapping(value="/register", method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.CREATED)
     public @ResponseBody
-    void register(@RequestBody RegistrationDetails details,HttpServletRequest request) {
+    void register(@RequestBody RegistrationDetails details, @RequestHeader(value = "Origin",required = false) String origin,HttpServletRequest request) {
         try{
             // it repeats the check for duplicate username
             userDetailsService.loadUserByUsername(details.getUsername());
             throw new DuplicateUserException("User already present");
         }catch(UsernameNotFoundException e){
             try {
-                userDetailsService.addUserNoActive(details.getEmail(), details.getUsername(), details.getPassword(),getBaseUrl(request)+"/guest/activate/");
+                if(details.getEmail()==null||details.getEmail().isEmpty()){
+                    userDetailsService.addUser(details.getUsername(),details.getPassword());
+                }
+                if(origin!=null&&!origin.isEmpty()&&!origin.equals(getBaseUrl(request))) {
+                    userDetailsService.addUserNoActive(details.getEmail(), details.getUsername(), details.getPassword(), origin + "/guest/activate/",true);
+                }else{
+                    userDetailsService.addUserNoActive(details.getEmail(), details.getUsername(), details.getPassword(), origin + "/guest/activate/",false);
+                }
             }catch(Throwable e2){
-                throw new RuntimeException("Error adding the user");
+                throw new RuntimeException("Error adding the user, Please try later");
             }
         }
     }
@@ -93,11 +101,15 @@ public class RestRegistrationController {
     /**
      * This method allows to request a password reset.
      */
-    @RequestMapping(value="/forgot/{username}/", params = {"forgotcallback"}, method = RequestMethod.GET)
+    @RequestMapping(value="/forgot/{username}/", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
-    void reset(@ApiParam("Username of which password is forgotted") @PathVariable("username") String username, @RequestParam(value = "forgotcallback") String callback, HttpServletRequest request) {
-        userDetailsService.forgotPassword(username,request.getScheme()+"://"+callback+"/reset/");
+    void forgot(@ApiParam("Username of which password is forgotted")@PathVariable("username") String username, @RequestHeader(value = "Origin",required = false) String origin,HttpServletRequest request) throws EmailException {
+        if(origin!=null&&!origin.isEmpty()&&!origin.equals(getBaseUrl(request))){
+            userDetailsService.forgotPassword(username,origin+"/reset/",true);
+        }else{
+            userDetailsService.forgotPassword(username,getBaseUrl(request)+"/reset/",false);
+        }
     }
     private String getBaseUrl(HttpServletRequest req) {
         return req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + req.getContextPath();

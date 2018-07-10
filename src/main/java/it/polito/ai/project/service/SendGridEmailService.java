@@ -21,7 +21,7 @@ public class SendGridEmailService{
     }
     private Response sendEmail(String from, String to, String subject, Content content) {
         Mail mail = new Mail(new Email(from), subject, new Email(to), content);
-        mail.setReplyTo(new Email("admin@frontend.eu-de.mybluemix.net"));
+        mail.setReplyTo(new Email("admin@r4ffy.info"));
         Request request = new Request();
         Response response = null;
         try {

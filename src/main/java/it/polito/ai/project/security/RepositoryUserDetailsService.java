@@ -1,7 +1,7 @@
 package it.polito.ai.project.security;
 
+import it.polito.ai.project.service.EmailException;
 import it.polito.ai.project.service.EmailService;
-import it.polito.ai.project.service.SendGridEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -43,13 +43,22 @@ public class RepositoryUserDetailsService implements UserDetailsService {
         user.setEnabled(true);
         userRepository.save(user);
     }
-    public void addUserNoActive(String email, String username, String password,String activateurl){
+    public void addUserNoActive(String email, String username, String password, String activateurl, boolean crossdomainreq) throws EmailException {
         ArrayList<GrantedAuthority> grantedAuthorities=new ArrayList<GrantedAuthority>();
         grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_CUSTOMER"));
         User user=new User(email, username, password,grantedAuthorities);
         userRepository.save(user);
-        emailService.sendActivateEmail(user.getEmail(),user.getUsername(),activateurl+username+"/"+user.getActivationCode());
+        try {
+            if (crossdomainreq) {
+                emailService.sendActivateEmail(user.getEmail(), user.getUsername(), activateurl + username + "@" + user.getActivationCode());
+            } else {
+                emailService.sendActivateEmail(user.getEmail(), user.getUsername(), activateurl + username + "/" + user.getActivationCode());
+            }
+        }catch (EmailException e){
+            userRepository.delete(user);
+            throw e;
+        }
     }
     public void activateAccount(String username,String activationcode) throws AccessDeniedException {
         Optional<User> userOptional = userRepository.findByUsername(username);
@@ -106,7 +115,7 @@ public class RepositoryUserDetailsService implements UserDetailsService {
         }
     }
 
-    public void forgotPassword(String username,String reseturl) {
+    public void forgotPassword(String username, String reseturl, boolean crossrequest) throws EmailException {
         Optional<User> userOptional = userRepository.findByUsername(username);
         if (!userOptional.isPresent()) {
             throw new UsernameNotFoundException(username);
@@ -117,6 +126,10 @@ public class RepositoryUserDetailsService implements UserDetailsService {
         }
         String forgotten=user.generateForgottenCode();
         userRepository.save(user);
-        emailService.sendResetPasswordEmail(user.getEmail(),user.getUsername(),reseturl+username+"/"+forgotten);
+        if(crossrequest) {
+            emailService.sendResetPasswordEmail(user.getEmail(), user.getUsername(), reseturl + username + "@" + forgotten);
+        }else{
+            emailService.sendResetPasswordEmail(user.getEmail(), user.getUsername(), reseturl + username + "/" + forgotten);
+        }
     }
 }
