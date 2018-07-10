@@ -23,6 +23,7 @@ import org.springframework.web.server.UnsupportedMediaTypeStatusException;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
@@ -69,7 +70,7 @@ public class RestSellerController {
             resp.addAll(userArchiveService.getPurchasedArchives(user,page,size));
         }
         //resp.forEach(a -> a.setContent(null));
-        List<Resource<UserArchive>> hateoasArchive= resp.stream().map(this::createUserArchiveResoure).collect(Collectors.toList());
+        List<Resource<UserArchive>> hateoasArchive= resp.stream().filter(Objects::nonNull).map(this::createUserArchiveResoure).collect(Collectors.toList());
         UserArchives archives=new UserArchives(hateoasArchive);
         archives.add(linkTo(methodOn(RestSellerController.class).getArchivesHateos(ownership, page, size)).withSelfRel());
         if(page-1>=0) {
