@@ -1,13 +1,19 @@
 package it.polito.ai.project.rest;
 
+import io.swagger.annotations.ApiParam;
 import it.polito.ai.project.security.RepositoryUserDetailsService;
 import it.polito.ai.project.service.model.ClientInteraction.RegistrationDetails;
 import it.polito.ai.project.service.model.CustomException.DuplicateUserException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+import sun.net.httpserver.HttpServerImpl;
+
+import javax.servlet.http.HttpServletRequest;
+import java.nio.file.AccessDeniedException;
 
 /**
  * This class is related to the RestRegistrationController, which includes the methods for registration.
@@ -55,18 +61,49 @@ public class RestRegistrationController {
     @RequestMapping(value="/register", method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.CREATED)
     public @ResponseBody
-    void register(@RequestBody RegistrationDetails details) {
+    void register(@RequestBody RegistrationDetails details,HttpServletRequest request) {
         try{
             // it repeats the check for duplicate username
             userDetailsService.loadUserByUsername(details.getUsername());
             throw new DuplicateUserException("User already present");
         }catch(UsernameNotFoundException e){
             try {
-                userDetailsService.addUser(details.getEmail(), details.getUsername(), details.getPassword());
+                userDetailsService.addUserNoActive(details.getEmail(), details.getUsername(), details.getPassword(),getBaseUrl(request)+"/guest/activate/");
             }catch(Throwable e2){
                 throw new RuntimeException("Error adding the user");
             }
-            return;
         }
     }
+    /**
+     * This method allows to activate a new user.
+     */
+    @RequestMapping(value="/activate/{username}/{activationcode}", method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+    public @ResponseBody
+    void activate(@ApiParam("Username that will be activated") @PathVariable("username") String username, @ApiParam("Activation Code")@PathVariable("activationcode") String activationcode) throws AccessDeniedException {
+        userDetailsService.activateAccount(username,activationcode);
+    }
+    /**
+     * This method allows to reset a user password.
+     */
+    @RequestMapping(value="/reset/{username}/{forgottencode}", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public @ResponseBody
+    void reset(@ApiParam("Username of which password will be resetted") @PathVariable("username") String username, @ApiParam("Forgot Password Code")  @PathVariable("forgottencode") String forgottencode,
+                @ApiParam("New Password") @RequestBody String password) throws AccessDeniedException {
+        userDetailsService.resetPassword(username,forgottencode,password);
+    }
+    /**
+     * This method allows to request a password reset.
+     */
+    @RequestMapping(value="/forgot/{username}/", params = {"forgotcallback"}, method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+    public @ResponseBody
+    void reset(@ApiParam("Username of which password is forgotted") @PathVariable("username") String username, @RequestParam(value = "forgotcallback") String callback, HttpServletRequest request) {
+        userDetailsService.forgotPassword(username,request.getScheme()+"://"+callback+"/reset/");
+    }
+    private String getBaseUrl(HttpServletRequest req) {
+        return req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + req.getContextPath();
+    }
+
 }

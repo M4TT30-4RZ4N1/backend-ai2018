@@ -1,5 +1,6 @@
 package it.polito.ai.project.security;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -9,21 +10,28 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
+import java.util.UUID;
+
 @Document
 public class User implements UserDetails {
+    @Id
+    private ObjectId _id;
     private  Collection<GrantedAuthority> authorities;
     private  String password;
     @Indexed(unique = true)
     private  String username;
     private  String email;
+    private  String activationCode;
+    private  String forgottenCode;
     private  boolean accountNonExpired;
     private  boolean accountNonLocked;
     private  boolean credentialsNonExpired;
     private  boolean enabled;
     public  User(){}
 
-    public User(Collection<GrantedAuthority> authorities, String password, String username, boolean accountNonExpired, boolean accountNonLocked, boolean credentialsNonExpired, boolean enabled) {
+    public User(Collection<GrantedAuthority> authorities, String password, String username, boolean accountNonExpired, boolean accountNonLocked, boolean credentialsNonExpired, boolean enabled, String activationCode) {
         this.authorities = authorities;
         this.password = password;
         this.username = username;
@@ -31,30 +39,25 @@ public class User implements UserDetails {
         this.accountNonLocked = accountNonLocked;
         this.credentialsNonExpired = credentialsNonExpired;
         this.enabled = enabled;
-
+        this.activationCode = activationCode;
     }
-    public  User(String email, String username, String plainpassword, Collection<GrantedAuthority> grantedAuthorities){
+    public User(String email, String username, String plainpassword, Collection<GrantedAuthority> grantedAuthorities){
         this.email = email;
         this.username=username;
         this.password= new BCryptPasswordEncoder(4).encode(plainpassword);
         this.accountNonExpired=true;
         this.accountNonLocked=true;
         this.credentialsNonExpired=true;
-        this.enabled=true;
+        this.enabled=false;
         this.authorities= grantedAuthorities;
+        this.activationCode =User.generateUniqueCode();
     }
-    public  User(String email, String username, String plainpassword, String role){
-        this.email = email;
-        this.username=username;
-        this.password= new BCryptPasswordEncoder(4).encode(plainpassword);
-        this.accountNonExpired=true;
-        this.accountNonLocked=true;
-        this.credentialsNonExpired=true;
-        this.enabled=true;
-        this.authorities= new ArrayList<>();
-        this.authorities.add(new SimpleGrantedAuthority(role));
-    }
-
+    /**
+     * User with password only are preactivated
+     * @param username
+     * @param plainpassword
+     * @param role
+     */
     public  User(String username, String plainpassword, String role){
         this.email = "";
         this.username=username;
@@ -65,6 +68,27 @@ public class User implements UserDetails {
         this.enabled=true;
         this.authorities= new ArrayList<>();
         this.authorities.add(new SimpleGrantedAuthority(role));
+    }
+    public String getForgottenCode() {
+        return forgottenCode;
+    }
+
+    public String generateForgottenCode() {
+        this.forgottenCode = User.generateUniqueCode();
+        return  this.forgottenCode;
+    }
+    public void setForgottenCode(String forgottenCode) {
+        this.forgottenCode = forgottenCode;
+    }
+    private static String generateUniqueCode(){
+        return Base64.getEncoder().encodeToString(UUID.randomUUID().toString().getBytes());
+    }
+    public String getActivationCode() {
+        return activationCode;
+    }
+
+    public void setActivationCode(String activationCode) {
+        this.activationCode = activationCode;
     }
 
     public String getEmail() {

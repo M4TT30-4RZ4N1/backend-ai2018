@@ -147,6 +147,11 @@
 			<version>2.5</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.sendgrid</groupId>
+			<artifactId>sendgrid-java</artifactId>
+			<version>4.1.2</version>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
