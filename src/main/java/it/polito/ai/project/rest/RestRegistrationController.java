@@ -5,6 +5,7 @@ import it.polito.ai.project.security.RepositoryUserDetailsService;
 import it.polito.ai.project.service.EmailException;
 import it.polito.ai.project.service.model.ClientInteraction.RegistrationDetails;
 import it.polito.ai.project.service.model.CustomException.DuplicateUserException;
+import it.polito.ai.project.service.model.CustomException.InvalidUserDetailsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -60,6 +61,9 @@ public class RestRegistrationController {
     @ResponseStatus(value = HttpStatus.CREATED)
     public @ResponseBody
     void register(@RequestBody RegistrationDetails details, @RequestHeader(value = "Origin",required = false) String origin,HttpServletRequest request) {
+
+        if(!userDetailsService.validateUser(details.getUsername()) || !userDetailsService.validateEmail(details.getEmail()))
+            throw new InvalidUserDetailsException();
         try{
             // it repeats the check for duplicate username
             userDetailsService.loadUserByUsername(details.getUsername());

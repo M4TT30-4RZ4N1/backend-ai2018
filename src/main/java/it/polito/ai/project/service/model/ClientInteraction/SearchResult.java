@@ -1,6 +1,5 @@
 package it.polito.ai.project.service.model.ClientInteraction;
 
-import javafx.geometry.Pos;
 
 import java.util.ArrayList;
 import java.util.List;

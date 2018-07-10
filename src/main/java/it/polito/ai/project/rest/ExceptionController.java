@@ -2,6 +2,7 @@ package it.polito.ai.project.rest;
 
 import it.polito.ai.project.service.model.CustomException.DuplicateUserException;
 import it.polito.ai.project.service.model.CustomException.EmptyArchiveException;
+import it.polito.ai.project.service.model.CustomException.InvalidUserDetailsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -43,7 +44,18 @@ public class ExceptionController {
     @ExceptionHandler(EmptyArchiveException.class)
     public ResponseEntity<?> handleEmptyArchive(Exception ex) {
         return ResponseEntity
-                .status(HttpStatus.BAD_GATEWAY)
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ex.getMessage());
+    }
+    /**
+     * This method allows to handle the Invalid User Details Exception.
+     * @param ex Exception
+     * @return      the Response Entity
+     */
+    @ExceptionHandler(InvalidUserDetailsException.class)
+    public ResponseEntity<?> handleInvalidUserDetails(Exception ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
                 .body(ex.getMessage());
     }
 }

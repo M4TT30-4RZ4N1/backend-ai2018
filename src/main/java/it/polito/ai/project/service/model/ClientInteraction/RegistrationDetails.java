@@ -1,6 +1,5 @@
 package it.polito.ai.project.service.model.ClientInteraction;
 
-import javafx.scene.effect.SepiaTone;
 
 /**
  * This class is related to RegistrationDetails.
