@@ -60,27 +60,22 @@ public class RestRegistrationController {
     @RequestMapping(value="/register", method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.CREATED)
     public @ResponseBody
-    void register(@RequestBody RegistrationDetails details, @RequestHeader(value = "Origin",required = false) String origin,HttpServletRequest request) {
-
-        if(!userDetailsService.validateUser(details.getUsername()) || !userDetailsService.validateEmail(details.getEmail()))
-            throw new InvalidUserDetailsException();
+    void register(@RequestBody RegistrationDetails details, @RequestHeader(value = "Origin",required = false) String origin,HttpServletRequest request) throws EmailException {
         try{
             // it repeats the check for duplicate username
             userDetailsService.loadUserByUsername(details.getUsername());
             throw new DuplicateUserException("User already present");
         }catch(UsernameNotFoundException e){
-            try {
                 if(details.getEmail()==null||details.getEmail().isEmpty()){
                     userDetailsService.addUser(details.getUsername(),details.getPassword());
                 }
                 if(origin!=null&&!origin.isEmpty()&&!origin.equals(getBaseUrl(request))) {
+                    if(!userDetailsService.validateUser(details.getUsername()) || !userDetailsService.validateEmail(details.getEmail()))
+                        throw new InvalidUserDetailsException();
                     userDetailsService.addUserNoActive(details.getEmail(), details.getUsername(), details.getPassword(), origin + "/activate/",true);
                 }else{
                     userDetailsService.addUserNoActive(details.getEmail(), details.getUsername(), details.getPassword(), getBaseUrl(request) + "/activate/",false);
                 }
-            }catch(Throwable e2){
-                throw new RuntimeException("Error adding the user, Please try later");
-            }
         }
     }
     /**

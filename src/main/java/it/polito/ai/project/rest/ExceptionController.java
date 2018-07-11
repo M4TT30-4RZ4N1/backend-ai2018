@@ -1,5 +1,6 @@
 package it.polito.ai.project.rest;
 
+import it.polito.ai.project.service.EmailException;
 import it.polito.ai.project.service.model.CustomException.DuplicateUserException;
 import it.polito.ai.project.service.model.CustomException.EmptyArchiveException;
 import it.polito.ai.project.service.model.CustomException.InvalidUserDetailsException;
@@ -57,5 +58,11 @@ public class ExceptionController {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ex.getMessage());
+    }
+    @ExceptionHandler(EmailException.class)
+    public ResponseEntity<?> handleEmailUnableToSend(Exception ex) {
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body("Unable to send email");
     }
 }
