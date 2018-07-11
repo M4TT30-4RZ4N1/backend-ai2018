@@ -27,12 +27,12 @@ public class Validator {
             return false;
         }
         // check t2 > t1
-        if(t2.getTimestamp().getTime() <= t1.getTimestamp().getTime()){
+        if(t2.getTimestamp() <= t1.getTimestamp()){
             return false;
         }
         // check distance/time < 100 ms
         double distance = Haversine.distance(t1.retriveLat(), t1.retrieveLng(), t2.retriveLat(), t2.retrieveLng());
-        long diffTime = t2.getTimestamp().getTime() - t1.getTimestamp().getTime();
+        long diffTime = t2.getTimestamp() - t1.getTimestamp();
         if(diffTime == 0){
             return false;
         }
@@ -43,7 +43,7 @@ public class Validator {
     private boolean validateCoordinate(TimedPosition t){
 
         //check not null and timestamp >=0
-        if(t == null || t.getTimestamp().getTime() < 0){
+        if(t == null || t.getTimestamp() < 0){
             return false;
         }
         // check -90.00 <= lat <= +90.00  and -180.00 <= long <= +180.00
