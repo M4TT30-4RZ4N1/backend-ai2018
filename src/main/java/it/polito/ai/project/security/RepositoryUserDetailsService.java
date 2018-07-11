@@ -13,9 +13,11 @@ import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 public class RepositoryUserDetailsService implements UserDetailsService {
@@ -29,7 +31,9 @@ public class RepositoryUserDetailsService implements UserDetailsService {
     public RepositoryUserDetailsService(EmailService emailService) {
         this.emailService = emailService;
     }
-
+    public List<String> getAllUsername(){
+        return userRepository.findAll().stream().map(User::getUsername).collect(Collectors.toList());
+    }
     /**
      * Aggiunge un utente nel DB
      * @param username

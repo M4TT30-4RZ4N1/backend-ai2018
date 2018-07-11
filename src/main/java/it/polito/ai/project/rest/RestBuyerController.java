@@ -1,14 +1,13 @@
 package it.polito.ai.project.rest;
 
+import it.polito.ai.project.security.RepositoryUserDetailsService;
 import it.polito.ai.project.service.CustomerTransactionService;
 import it.polito.ai.project.service.UserArchiveService;
 import it.polito.ai.project.service.model.ClientInteraction.ArchiveTransaction;
 import it.polito.ai.project.service.model.ClientInteraction.FilterQuery;
 import it.polito.ai.project.service.model.ClientInteraction.SearchResult;
 import it.polito.ai.project.service.model.CustomerTransaction;
-import it.polito.ai.project.service.model.TimedPosition;
 import it.polito.ai.project.service.model.UserArchive;
-import javassist.tools.web.BadHttpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
@@ -16,12 +15,9 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.wololo.geojson.Polygon;
 
-import javax.servlet.http.HttpSession;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * This class is related to the RestBuyerController, which includes the methods that are available to the buyer.
@@ -31,21 +27,28 @@ import java.util.stream.Collectors;
 public class RestBuyerController {
     private final CustomerTransactionService transactionService;
     private final UserArchiveService userArchiveService;
+    private final RepositoryUserDetailsService repositoryUserDetailsService;
     /**
      * This method allows to generate a RestBuyerController.
      * @param transactionService
      * @param userArchiveService
+     * @param repositoryUserDetailsService
      */
     @Autowired
-    public RestBuyerController(CustomerTransactionService transactionService, UserArchiveService userArchiveService) {
+    public RestBuyerController(CustomerTransactionService transactionService, UserArchiveService userArchiveService, RepositoryUserDetailsService repositoryUserDetailsService) {
         this.transactionService = transactionService;
         this.userArchiveService = userArchiveService;
+        this.repositoryUserDetailsService = repositoryUserDetailsService;
+    }
+    @RequestMapping(value="/users", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(value = HttpStatus.OK)
+    public @ResponseBody
+    List<String> getUsers(){
+        return repositoryUserDetailsService.getAllUsername();
     }
 
     /**
      * This method allows to retrieve all the positions belonging to a certain time interval and included in the specified polygon.
-     * @param session
-     * @param redirect
      * @param filters
      * @param after
      * @param before
@@ -54,8 +57,7 @@ public class RestBuyerController {
     @RequestMapping(value="/search", method = RequestMethod.POST, params = {"after","before"}, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
-    SearchResult getPositionInIntervalInPolygon(HttpSession session, RedirectAttributes redirect,
-                                                @RequestBody FilterQuery filters,
+    SearchResult getPositionInIntervalInPolygon(@RequestBody FilterQuery filters,
                                                 @Param("after") Long after, @Param("before") Long before) throws Exception {
         if(after == null || before == null){
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"Invalid parameters");
@@ -72,7 +74,6 @@ public class RestBuyerController {
 
     /**
      * This method allows to confirm the transaction and to retrieve all the positions belonging to a certain time interval and included in the specified polygon.
-     * @param session
      * @param filters
      * @param after
      * @param before
@@ -81,7 +82,7 @@ public class RestBuyerController {
     @RequestMapping(value = "/buy", method = RequestMethod.POST, params = {"after","before"}, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(value = HttpStatus.OK)
     public @ResponseBody
-    List<ArchiveTransaction> getTransactions(HttpSession session, @RequestBody FilterQuery filters,
+    List<ArchiveTransaction> getTransactions(@RequestBody FilterQuery filters,
                                              @Param("after") Long after, @Param("before") Long before) throws Exception {
 
         if(after == null || before == null){

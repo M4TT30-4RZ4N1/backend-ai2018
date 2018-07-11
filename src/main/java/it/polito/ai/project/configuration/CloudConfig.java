@@ -1,4 +1,4 @@
-package it.polito.ai.project;
+package it.polito.ai.project.configuration;
 
 import org.springframework.cloud.config.java.AbstractCloudConfig;
 import org.springframework.context.annotation.Bean;

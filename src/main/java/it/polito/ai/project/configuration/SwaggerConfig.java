@@ -1,4 +1,4 @@
-package it.polito.ai.project;
+package it.polito.ai.project.configuration;
 
 import com.google.common.base.Predicates;
 import org.springframework.beans.factory.annotation.Value;
