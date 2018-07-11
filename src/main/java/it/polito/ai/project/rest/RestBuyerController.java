@@ -115,7 +115,7 @@ public class RestBuyerController {
         double totalPrice = 100;
         double positionPrice = totalPrice/archiveToBought.size();
         String customer = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        archiveToBought.forEach(a ->{
+        archiveToBought.stream().filter(archiveTransaction -> !archiveTransaction.isPurchased()).forEach(a ->{
             List<CustomerTransaction> transactions = transactionService.getTransactionByCustomerAndFilename(customer, a.getFilename());
             if(transactions.size() == 0){
                 UserArchive archive = userArchiveService.findArchiveByFilenameAndDeletedIsFalse(a.getFilename());
