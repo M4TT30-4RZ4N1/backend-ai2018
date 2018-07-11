@@ -30,7 +30,7 @@ public class EmailService {
         try {
             String emailcontent = Files.readAllLines(Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource("activate.html")).toURI())).stream().collect(Collectors.joining());
             emailcontent = emailcontent.replace("-username-", username).replace("-url-", activate);
-            this.sendGridEmailService.sendHTML("admin@r4ffy.info", email, "Activate Account", emailcontent);
+            this.sendGridEmailService.sendHTML("admin@marsmarketplace.ga", email, "Activate Account", emailcontent);
         }catch (Exception e){
             throw new EmailException("Backend Failure: Unable to send Activation Email!");
         }
