@@ -11,6 +11,15 @@ public class SearchResult {
     public List<PositionResult> byPosition;
     public List<UserResult> byUser;
 
+    public long getByTotal() {
+        return byTotal;
+    }
+
+    public void setByTotal(long byTotal) {
+        this.byTotal = byTotal;
+    }
+
+    public long byTotal;
     public SearchResult() {
         this.byPosition= new ArrayList<>();
         this.byTimestamp= new ArrayList<>();
@@ -22,10 +31,11 @@ public class SearchResult {
      * @param byPosition
      * @param byUser
      */
-    public SearchResult(List<TimestampResult> byTimestamp, List<PositionResult> byPosition, List<UserResult> byUser) {
+    public SearchResult(List<TimestampResult> byTimestamp, List<PositionResult> byPosition, List<UserResult> byUser,long byTotal) {
         this.byTimestamp = byTimestamp;
         this.byPosition = byPosition;
         this.byUser = byUser;
+        this.byTotal=byTotal;
     }
     /**
      * This method allows to retrieve the list of TimestampResult based on Timestamp.

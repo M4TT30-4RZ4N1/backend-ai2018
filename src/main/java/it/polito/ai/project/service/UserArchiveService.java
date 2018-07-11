@@ -223,6 +223,7 @@ public class UserArchiveService {
         searchResult.byTimestamp=searchResult.byTimestamp.stream().distinct().sorted(Comparator.comparingLong(TimestampResult::getTimestamp)).collect(Collectors.toList());
         searchResult.byPosition=searchResult.byPosition.stream().distinct().collect(Collectors.toList());
         searchResult.byUser=searchResult.byUser.stream().distinct().sorted(Comparator.comparing(UserResult::getUser)).collect(Collectors.toList());
+        searchResult.byTotal=res.size();
         Collections.shuffle(searchResult.byPosition);
         return searchResult;
     }
