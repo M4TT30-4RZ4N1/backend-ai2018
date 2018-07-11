@@ -4,10 +4,14 @@ import com.mongodb.BasicDBObject;
 import it.polito.ai.project.service.model.ClientInteraction.ArchiveTransaction;
 import it.polito.ai.project.service.model.TimedPosition;
 import it.polito.ai.project.service.model.UserArchive;
+import jdk.internal.org.objectweb.asm.TypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -19,6 +23,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
+
 
 @Repository
 @RestResource(exported = false)
@@ -53,7 +60,7 @@ public class UserArchiveRepositoryImpl {
 
     public List<UserArchive> getArchiveWithPositionInIntervalInPolygonInUserList(Polygon jsonpolygon, long after, long before, List<String> user) {
         if(mongoTemplate == null) throw new RuntimeException("Mongo DB not initialized");
-        List<UserArchive> result = null;
+        List<UserArchive> result;
         List<Point> springPoints = new ArrayList<>();
         for (int i = 0; i < jsonpolygon.getCoordinates().length; i++) {
             for (int j = 0; j < jsonpolygon.getCoordinates()[i].length; j++) {
@@ -63,13 +70,40 @@ public class UserArchiveRepositoryImpl {
         org.springframework.data.geo.Polygon polygon =
                 new org.springframework.data.geo.Polygon(springPoints);
         Query query = new Query();
-        query.addCriteria(Criteria.where("content").elemMatch(
-                Criteria.where("timestamp").gt(after).lt(before)
-                        .and("point").within(polygon)));
-        query.addCriteria(Criteria.where("deleted").is(false));
-        if(user!=null && user.size() > 0)
-            query.addCriteria(Criteria.where("owner").in(user));
-        result= mongoTemplate.find(query,UserArchive.class);
+        TypedAggregation aggregation = newAggregation(
+                UserArchive.class,
+                match(Criteria.where("deleted").is(false)),
+                unwind("content"),
+                project("owner","filename","counter","deleted","content"),
+                match(Criteria.where("content.point").within(polygon)),
+                match(Criteria.where("content.timestamp").gt(after).lt(before)),
+                group("filename")
+                .first("owner").as("owner")
+                .first("filename").as("filename")
+                .first("counter").as("counter")
+                .first("deleted").as("deleted")
+                .push("content").as("content")
+        );
+        if(user!=null && user.size() > 0){
+            aggregation = newAggregation(
+                    UserArchive.class,
+                    match(Criteria.where("owner").in(user)),
+                    match(Criteria.where("deleted").is(false)),
+                    unwind("content"),
+                    project("owner","filename","counter","deleted","content"),
+                    match(Criteria.where("content.point").within(polygon)),
+                    match(Criteria.where("content.timestamp").gt(after).lt(before)),
+                    group("filename")
+                            .first("owner").as("owner")
+                            .first("filename").as("filename")
+                            .first("counter").as("counter")
+                            .first("deleted").as("deleted")
+                            .push("content").as("content")
+            );
+        }
+
+        AggregationResults<UserArchive> aggresult= mongoTemplate.aggregate(aggregation,"archives", UserArchive.class);
+        result=aggresult.getMappedResults();
         System.out.println("Search result: " + result);
         return result;
     }
