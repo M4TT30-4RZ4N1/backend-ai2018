@@ -30,9 +30,9 @@ public class RestBuyerController {
     private final RepositoryUserDetailsService repositoryUserDetailsService;
     /**
      * This method allows to generate a RestBuyerController.
-     * @param transactionService
-     * @param userArchiveService
-     * @param repositoryUserDetailsService
+     * @param transactionService the service which is related to the transactions on Mongo
+     * @param userArchiveService the service which is related to the archives on Mongo
+     * @param repositoryUserDetailsService the service which is related to the user details on Mongo
      */
     @Autowired
     public RestBuyerController(CustomerTransactionService transactionService, UserArchiveService userArchiveService, RepositoryUserDetailsService repositoryUserDetailsService) {
@@ -49,9 +49,9 @@ public class RestBuyerController {
 
     /**
      * This method allows to retrieve all the positions belonging to a certain time interval and included in the specified polygon.
-     * @param filters
-     * @param after
-     * @param before
+     * @param filters the filter is referred to user and polygon
+     * @param after the start timestamp for the research
+     * @param before the end timestamp for the research
      * @return  the list of positions detected
      */
     @RequestMapping(value="/search", method = RequestMethod.POST, params = {"after","before"}, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -73,10 +73,10 @@ public class RestBuyerController {
     }
 
     /**
-     * This method allows to confirm the transaction and to retrieve all the positions belonging to a certain time interval and included in the specified polygon.
-     * @param filters
-     * @param after
-     * @param before
+     * This method allows to retrieve the archive which contain all the positions belonging to a certain time interval and included in the specified polygon.
+     * @param filters the filter is referred to user and polygon
+     * @param after the start timestamp for the research
+     * @param before the end timestamp for the research
      * @return  the list of positions detected
      */
     @RequestMapping(value = "/buy", method = RequestMethod.POST, params = {"after","before"}, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -110,6 +110,10 @@ public class RestBuyerController {
         return result;
     }
 
+    /**
+     * This method allows to confirm the transaction.
+     * @param archiveToBought the archives for which a new transaction will be registered
+     */
     @RequestMapping(value = "/buy/confirm", method = RequestMethod.POST, consumes = {"application/json"})
     @ResponseStatus(value = HttpStatus.CREATED)
     public void confirmTransactions(@RequestBody List<ArchiveTransaction> archiveToBought){

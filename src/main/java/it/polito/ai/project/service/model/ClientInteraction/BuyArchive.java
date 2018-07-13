@@ -35,14 +35,14 @@ public class BuyArchive {
         this.filename = filename;
     }
     /**
-     * This method allows to check if the archive has been purchased.
+     * This method allows to check if the archive has been purchased by the user.
      * @return TRUE if the archive has been purchased, otherwise FALSE
      */
     public boolean isPurchased() {
         return purchased;
     }
     /**
-     * This method allows to set if the archive has been purchased.
+     * This method allows to set if the archive has been purchased by the user.
      * @param purchased
      */
     public void setPurchased(boolean purchased) {

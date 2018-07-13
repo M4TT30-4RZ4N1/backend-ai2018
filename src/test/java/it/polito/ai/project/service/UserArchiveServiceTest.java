@@ -120,13 +120,13 @@ public class UserArchiveServiceTest {
         Assert.assertNull(purchased.get(0).getContent()); //content must be empty
     }
 
-    @Test
+   /* @Test
     public void createZip() {
         UserArchive archive1=new UserArchive("user1","testfile1",TimedPositionGenerator.get());
         userArchiveService.addArchive(archive1);
         UserArchive archive2=new UserArchive("user1","testfile2",TimedPositionGenerator.get2());
         userArchiveService.addArchive(archive2);
-    }
+     */
 
     @Test
     public void deleteArchives() {

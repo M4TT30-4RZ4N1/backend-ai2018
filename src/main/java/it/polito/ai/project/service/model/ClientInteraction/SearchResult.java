@@ -10,16 +10,8 @@ public class SearchResult {
     public List<TimestampResult> byTimestamp;
     public List<PositionResult> byPosition;
     public List<UserResult> byUser;
-
-    public long getByTotal() {
-        return byTotal;
-    }
-
-    public void setByTotal(long byTotal) {
-        this.byTotal = byTotal;
-    }
-
     public long byTotal;
+
     public SearchResult() {
         this.byPosition= new ArrayList<>();
         this.byTimestamp= new ArrayList<>();
@@ -70,4 +62,17 @@ public class SearchResult {
     public void setByUser(List<UserResult> byUser) {
         this.byUser = byUser;
     }
+
+    /**
+     * This method allows to retrieve the total number of searched results.
+     * @return total number of results
+     */
+    public long getByTotal() {
+        return byTotal;
+    }
+
+    public void setByTotal(long byTotal) {
+        this.byTotal = byTotal;
+    }
+
 }
