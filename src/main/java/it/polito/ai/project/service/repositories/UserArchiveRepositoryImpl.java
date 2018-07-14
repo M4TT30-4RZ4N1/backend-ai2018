@@ -31,6 +31,11 @@ public class UserArchiveRepositoryImpl {
         this.mongoTemplate = mongoTemplate;
     }
 
+    /**
+     * This method allows to select the last TimedPosition.
+     * @param owner username
+     * @return the last TimedPosition of a user
+     */
     public TimedPosition findLastPosition(String owner){
         Query query = new Query();
         Boolean b = false;
@@ -45,6 +50,15 @@ public class UserArchiveRepositoryImpl {
         System.out.println("Last position: " + maxObject);
         return maxObject;
     }
+
+    /**
+     * This method allows to retrieve a user archive list based on a filter.
+     * @param jsonpolygon polygon filter
+     * @param after start timestamp filter
+     * @param before end timestamp filter
+     * @param user username filter
+     * @return a list of user archives
+     */
     public List<UserArchive> getPositionInIntervalInPolygonInUserList(Polygon jsonpolygon, long after, long before, List<String> user) {
         List<UserArchive> result = null;
         result= getArchiveWithPositionInIntervalInPolygonInUserList(jsonpolygon, after, before, user);
@@ -52,6 +66,14 @@ public class UserArchiveRepositoryImpl {
         return result;
     }
 
+    /**
+     * This method allows to retrieve a user archive list based on a filter.
+     * @param jsonpolygon polygon filter
+     * @param after start timestamp filter
+     * @param before end timestamp filter
+     * @param user username filter
+     * @return a list of user archives
+     */
     public List<UserArchive> getArchiveWithPositionInIntervalInPolygonInUserList(Polygon jsonpolygon, long after, long before, List<String> user) {
         if(mongoTemplate == null) throw new RuntimeException("Mongo DB not initialized");
         List<UserArchive> result;

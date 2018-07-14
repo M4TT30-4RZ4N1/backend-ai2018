@@ -14,12 +14,21 @@ public class Validator {
     public Validator() {
     }
 
-    // this method validate the first coordinate of the sequence (only data validity)
+    /**
+     * This method validates the first coordinate of the sequence (only data validity)
+     * @param t the first coordinate of the sequence
+     * @return true if the first coordinate is valid, false otherwise
+     */
     public boolean validateFirst(TimedPosition t){
         return validateCoordinate(t);
     }
 
-    // this method validate two coordinates in sequence (data validity + sequence validity)
+    /**
+     * this method validates two coordinates in sequence (data validity + sequence validity)
+     * @param t1 the first coordinate
+     * @param t2 the second coordinate
+     * @return true if the sequence is valid, false otherwise
+     */
     public boolean validateSequence(TimedPosition t1, TimedPosition t2){
 
         // check validity of t2 (assume t1 is correct)
@@ -40,6 +49,11 @@ public class Validator {
         return !(distance / time >= max_v);
     }
 
+    /**
+     * This method validates the coordinate (only data validity)
+     * @param t the coordinate
+     * @return true if the coordinate is valid, false otherwise
+     */
     private boolean validateCoordinate(TimedPosition t){
 
         //check not null and timestamp >=0

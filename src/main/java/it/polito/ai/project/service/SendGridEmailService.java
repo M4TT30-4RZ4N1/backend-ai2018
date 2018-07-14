@@ -14,11 +14,26 @@ public class SendGridEmailService{
         this.sendGridClient = sendGridClient;
     }
 
+    /**
+     * This method allows to send an Email through html.
+     * @param from sender email
+     * @param to receiver email
+     * @param subject subject of the email
+     * @param body content of the email
+     */
     public void sendHTML(String from, String to, String subject, String body) {
         Response response = sendEmail(from, to, subject, new Content("text/html", body));
         System.out.println("Status Code: " + response.getStatusCode() + ", Body: " + response.getBody() + ", Headers: "
                 + response.getHeaders());
     }
+    /**
+     * This method allows to send an Email
+     * @param from sender email
+     * @param to receiver email
+     * @param subject subject of the email
+     * @param content content of the email
+     * @return the response
+     */
     private Response sendEmail(String from, String to, String subject, Content content) {
         Mail mail = new Mail(new Email(from), subject, new Email(to), content);
         mail.setReplyTo(new Email("admin@marsmarketplace.ga"));
