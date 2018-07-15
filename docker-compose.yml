@@ -1,8 +1,8 @@
 version: '2'
 services:
     lab3:
-        container_name: "project"
-        image: r4ffy/project
+        container_name: "progetto"
+        image: r4ffy/progetto
         ports:
             - 8080:8080
         links:
