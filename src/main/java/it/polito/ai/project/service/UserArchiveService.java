@@ -60,7 +60,7 @@ public class UserArchiveService {
      * @param archive new user archive
      */
     @PreAuthorize("hasRole( 'USER' )")
-    void addArchive(UserArchive archive){
+    public void addArchive(UserArchive archive){
         List<TimedPosition> content = validate(archive.getOwner(), archive.getContent());
         if(content.size() == 0) return;
         UserArchive newArchive = new UserArchive(archive.getOwner(), archive.getFilename(), archive.getCounter(), archive.isDeleted(), content);
