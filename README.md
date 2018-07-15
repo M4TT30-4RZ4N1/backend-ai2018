@@ -10,7 +10,7 @@ Travis:
 
 2) In order to start the application run a command shell inside the root directory of the project, using:
     > mvn package -Dskiptest
-    > docker build -t r4ffy/lab3 .
+    > docker build -t r4ffy/project .
     > docker-compose up
 
 3) Inside ./src/main/resources there is a file called postman_collection.json.
