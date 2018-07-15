@@ -53,10 +53,10 @@ public class ProjectApplication {
             Collection<GrantedAuthority> ga=new ArrayList<>();
             ga.add(new SimpleGrantedAuthority("ROLE_USER"));
             ga.add(new SimpleGrantedAuthority("ROLE_CUSTOMER"));
-            userRepository.save(new User("raffysommy@gmail.com","matteo","testpassword",ga));
-            userRepository.save(new User("raffysommy@gmail.com","raffaele","testpassword",ga));
-            userRepository.save(new User("raffysommy@gmail.com","antonio","testpassword",ga));
-            userRepository.save(new User("raffysommy@gmail.com","sabrina","testpassword",ga));
+            userRepository.save(new User("matteo","testpassword",ga));
+            userRepository.save(new User("raffaele","testpassword",ga));
+            userRepository.save(new User("antonio","testpassword",ga));
+            userRepository.save(new User("sabrina","testpassword",ga));
             Validator v=new Validator();
             userRepository.findAll().parallelStream().filter(user -> user.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER"))).parallel().forEach(user -> {
                 System.out.println("Adding test archive for "+ user.getUsername());

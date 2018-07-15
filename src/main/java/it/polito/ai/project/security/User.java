@@ -69,6 +69,18 @@ public class User implements UserDetails {
         this.authorities= new ArrayList<>();
         this.authorities.add(new SimpleGrantedAuthority(role));
     }
+
+    public User(String username, String plainpassword, Collection<GrantedAuthority> ga) {
+        this.email = "";
+        this.username=username;
+        this.password= new BCryptPasswordEncoder(4).encode(plainpassword);
+        this.accountNonExpired=true;
+        this.accountNonLocked=true;
+        this.credentialsNonExpired=true;
+        this.enabled=true;
+        this.authorities= ga;
+    }
+
     public String getForgottenCode() {
         return forgottenCode;
     }
