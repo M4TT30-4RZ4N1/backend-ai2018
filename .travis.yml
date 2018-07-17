@@ -5,4 +5,4 @@ env:
 before_install:
   - chmod +x mvnw
 script:
-  - mvn package -P cloud
+  - mvn package -Dmaven.test.skip=true -P cloud
